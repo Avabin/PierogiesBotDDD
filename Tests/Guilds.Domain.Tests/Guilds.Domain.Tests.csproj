@@ -21,8 +21,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Guilds.Domain\Guilds.Domain.csproj" />
-      <ProjectReference Include="..\..\Guilds.Infrastructure\Guilds.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\Modules\Guilds.Domain\Guilds.Domain.csproj" />
+      <ProjectReference Include="..\..\Modules\Guilds.Infrastructure\Guilds.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\Modules\Guilds.Mongo\Guilds.Mongo.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,0 +1,23 @@
+﻿services:
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: PierogiesBot
+    restart: always
+  rabbit:
+    image: rabbitmq:3-management
+    ports:
+      - "8081:15672"
+      - "5672:5672"
+    restart: always
+
+  seq:
+    image: datalust/seq
+    ports:
+      - "8080:80"
+      - "5341:5341"
+    environment:
+      - ACCEPT_EULA=Y
+    

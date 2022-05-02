@@ -4,12 +4,13 @@
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Guilds.Infrastructure\Guilds.Infrastructure.csproj" />
-      <ProjectReference Include="..\..\Shared.Core\Shared.Core.csproj" />
-      <ProjectReference Include="..\..\Shared.Guilds\Shared.Guilds.csproj" />
+      <ProjectReference Include="..\..\Modules\Guilds.Infrastructure\Guilds.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\Modules\Shared.Core\Shared.Core.csproj" />
+      <ProjectReference Include="..\..\Modules\Shared.Guilds\Shared.Guilds.csproj" />
     </ItemGroup>
 
 </Project>

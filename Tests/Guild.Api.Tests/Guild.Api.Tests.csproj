@@ -17,8 +17,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Guilds.Api\Guilds.Api.csproj" />
-      <ProjectReference Include="..\..\Guilds.Domain\Guilds.Domain.csproj" />
+      <ProjectReference Include="..\..\Modules\Guilds.Api\Guilds.Api.csproj" />
+      <ProjectReference Include="..\..\Modules\Guilds.Domain\Guilds.Domain.csproj" />
+      <ProjectReference Include="..\..\Modules\Shared.Guilds\Shared.Guilds.csproj" />
     </ItemGroup>
 
 </Project>

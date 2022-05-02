@@ -8,7 +8,6 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Driver;
-using NSubstitute;
 using NUnit.Framework;
 using Shared.Core.Events;
 using Shared.Core.MessageBroker;

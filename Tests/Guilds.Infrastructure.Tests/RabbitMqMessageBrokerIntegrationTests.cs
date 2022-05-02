@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Guilds.Api;
-using Guilds.Api.Queries;
 using Guilds.Infrastructure.RabbitMq;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -102,7 +100,7 @@ public class RabbitMqMessageBrokerIntegrationTests
 
         // Act
         var query  = new QueryInt();
-        var actual = await client.SendAndReceiveAsync<QueryIntResult, QueryInt>(query);
+        var actual = await client.SendAndReceiveAsync<QueryInt, QueryIntResult>(query);
 
         // Assert
         actual.Should().Be(expected);

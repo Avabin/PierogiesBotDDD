@@ -1,0 +1,60 @@
+﻿services:
+  mongo:
+    image: mongo
+    expose:
+      - 27017
+    environment:
+      MONGO_INITDB_DATABASE: PierogiesBot
+    restart: always
+    
+  rabbit:
+    image: rabbitmq:3-management
+    expose:
+      - 5672
+    ports:
+      - 5672:5672
+      - "8081:15672"
+    restart: always
+
+  seq:
+    image: datalust/seq
+    expose:
+      - 5341
+    ports:
+      - 5341:5341
+      - "8080:80"
+    environment:
+      - ACCEPT_EULA=Y
+    
+  guilds-persistence:
+    build:
+      context: .
+      dockerfile: Services/Guilds.Persistence/Dockerfile
+    image: ghcr.io/avabin/guilds-persistence
+    environment:
+      SEQ_URL: http://seq:5341
+      PB_RabbitMQ__Host: rabbit
+      PB_RabbitMQ__Port: 5672
+      PB_RabbitMQ__Username: guest
+      PB_RabbitMQ__Password: guest
+      PB_RabbitMQ__ClientName: Guilds.Persistence
+      PB_RabbitMQ__NatificationTopic: notifications
+      PB_ConnecionStrings__MongoDB: mongodb://mongo:27017
+      
+  guilds-api:
+    build: 
+      context: .
+      dockerfile: Services/Guilds.WebApi/Dockerfile
+    image: ghcr.io/avabin/guilds-api
+    ports:
+      - "80:80"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://0.0.0.0:80
+      SEQ_URL: http://seq:5341
+      PB_RabbitMQ__Host: rabbit
+      PB_RabbitMQ__Port: 5672
+      PB_RabbitMQ__Username: guest
+      PB_RabbitMQ__Password: guest
+      PB_RabbitMQ__ClientName: Guilds.WebApi
+      PB_RabbitMQ__NatificationTopic: notifications

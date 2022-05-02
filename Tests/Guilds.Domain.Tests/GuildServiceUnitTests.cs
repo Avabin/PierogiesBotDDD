@@ -2,17 +2,15 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq.Expressions;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Guilds.Domain.Aggregates.GuildAggregate;
-using Guilds.Infrastructure;
+using Guilds.Mongo;
 using NSubstitute;
 using NUnit.Framework;
 using Shared.Core.Events;
 using Shared.Core.MessageBroker;
-using Shared.Core.Notifications;
 using Shared.Core.Persistence;
 using Shared.Guilds.Notifications;
 using Shared.Mongo.MongoRepository;
@@ -26,6 +24,8 @@ public class GuildServiceUnitTests
     private IMongoRepositoryFactory _guildRepositoryFactory;
     private IRepository<GuildState> _guildRepository;
     private IMessageBroker _messageBroker;
+    private IEventStore _eventStore;
+    private GuildService Create() => new(_guildRepositoryFactory, _messageBroker, _eventStore);
     
     [SetUp]
     public void SetUp()
@@ -33,6 +33,7 @@ public class GuildServiceUnitTests
         _guildRepositoryFactory = Substitute.For<IMongoRepositoryFactory>();
         _guildRepository = Substitute.For<IRepository<GuildState>>();
         _messageBroker   = Substitute.For<IMessageBroker>();
+        _eventStore      = Substitute.For<IEventStore>();
         
         _guildRepositoryFactory.Create<GuildState>(Arg.Any<string>()).Returns(_guildRepository);
     }
@@ -41,7 +42,7 @@ public class GuildServiceUnitTests
     public async Task When_LoadState_ReturnsState()
     {
         // Arrange
-        var guildService = new GuildService(_guildRepositoryFactory, _messageBroker);
+        var guildService = Create();
         var guildId      = "123";
         var expected   = new GuildState("Test Guild", 123123123ul, ImmutableList<SubscribedChannel>.Empty, ImmutableList<IDelivery<IEvent>>.Empty, guildId);
         
@@ -59,7 +60,7 @@ public class GuildServiceUnitTests
     public async Task When_LoadState_StateNotFound_CreatesNewState()
     {
         // Arrange
-        var guildService = new GuildService(_guildRepositoryFactory, _messageBroker);
+        var guildService = Create();
         var guildId      = "123";
         var expected     = GuildState.Empty with {Id = guildId};
 
@@ -79,7 +80,7 @@ public class GuildServiceUnitTests
     public async Task When_LoadStateWithSnowflakeId_StateNotFound_CreatesNewState()
     {
         // Arrange
-        var guildService = new GuildService(_guildRepositoryFactory, _messageBroker);
+        var guildService = Create();
         var guildId      = 123123ul;
         var guildStateId = "123";
         var expected     = GuildState.Empty with {SnowflakeId = guildId, Id = guildStateId};
@@ -100,7 +101,7 @@ public class GuildServiceUnitTests
     public async Task When_ChangeName_ReturnsNewStateAndNotifies()
     {
         // Arrange
-        var guildService = new GuildService(_guildRepositoryFactory, _messageBroker);
+        var guildService = Create();
         var guildStateId = "123";
         var guildId = 123123123ul;
         var newName = "New Name";
@@ -123,7 +124,7 @@ public class GuildServiceUnitTests
     public async Task When_SubscribeChannel_ReturnsNewStateAndNotifies()
     {
         // Arrange
-        var guildService      = new GuildService(_guildRepositoryFactory, _messageBroker);
+        var guildService      = Create();
         var guildStateId           = "123";
         var channelName       = "123123";
         var channelId         = 123123123ul;
@@ -148,7 +149,7 @@ public class GuildServiceUnitTests
     public async Task When_UnsubscribeChannel_ReturnsNewStateAndNotifies()
     {
         // Arrange
-        var guildService      = new GuildService(_guildRepositoryFactory, _messageBroker);
+        var guildService      = Create();
         var guildStateId           = "123";
         var channelName       = "123123";
         var channelId         = 123123123ul;
