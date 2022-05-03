@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
   
 jobs:
-  build:
+  review:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -19,18 +19,13 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push image
+      - name: Build image
         uses: docker/build-push-action@v2
         with:
           file: Services/Guilds.WebApi/Dockerfile
           context: .
-          push: true
+          push: false
           tags: ghcr.io/avabin/guilds-api:dev
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
       - name: Set up dotnet 6
         uses: actions/setup-dotnet@v2
         with:
