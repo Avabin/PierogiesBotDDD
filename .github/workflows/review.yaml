@@ -46,7 +46,16 @@ jobs:
       - name: Build
         run: dotnet build
       - name: Set up test dependencies
-        run: docker-compose -f Tests/docker-compose.yml up -d
+        shell: bash
+        run: |
+          docker-compose -f Tests/docker-compose.yml up -d
+          echo "Waiting for RabbitMQ to start accepting connections"
+          while ! nc -z localhost 5672; do sleep 3; done
+          echo "RabbitMQ is up and accepting connections"
+          echo "Waiting for MongoDB to start accepting connections"
+          while ! nc -z localhost 27017; do sleep 3; done
+          echo "MongoDB is up and accepting connections"
+          sleep 10
       - name: Run tests
         run: dotnet test --no-build --logger "trx;LogFileName=results.trx"
       - name: End scan
