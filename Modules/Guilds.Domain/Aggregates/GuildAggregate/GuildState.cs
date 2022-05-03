@@ -19,7 +19,7 @@ public record GuildState : Entity
     }
 
     public static GuildState Empty =>
-        new("", 0, ImmutableList<SubscribedChannel>.Empty, ImmutableList<IDelivery<IEvent>>.Empty);
+        new("", 0);
 
     public string                            Name               { get; init; }
     public ulong                             SnowflakeId        { get; init; }

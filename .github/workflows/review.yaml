@@ -7,6 +7,7 @@ on:
   
 jobs:
   review:
+    name: Build and scan with SonarCloud
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -62,5 +63,61 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         run: ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-      
-        
+  buildImages:
+    name: Build docker images and push as dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Guilds.WebApi Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          file: Services/Guilds.WebApi/Dockerfile
+          push: true
+          tags: ghcr.io/avabin/guilds-api:dev
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Build and push Guilds.Persistence Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          file: Services/Guilds.Persistence/Dockerfile
+          push: true
+          tags: ghcr.io/avabin/guilds-persistence:dev
+          labels: ${{ steps.meta.outputs.labels }}
+          
+  tagAfterTests:
+    name: Tag dev images as latest after review
+    needs: ["buildImages", "review"]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_TOKEN }}
+      - name: Tag and push guils-api
+        run: |
+          docker pull ghcr.io/avabin/guilds-api:dev
+          docker tag ghcr.io/avabin/guilds-api:dev ghcr.io/avabin/guilds-api:latest
+          docker push ghcr.io/avabin/guilds-api:latest
+      - name: Tag and push guilds-persistence
+        run: |
+          docker pull ghcr.io/avabin/guilds-persistence:dev
+          docker tag ghcr.io/avabin/guilds-persistence:dev ghcr.io/avabin/guilds-persistence:latest
+          docker push ghcr.io/avabin/guilds-persistence:latest
