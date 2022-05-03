@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Guilds.Domain.Aggregates.GuildAggregate;
 using Shared.Core.Events;
 using Shared.Core.MessageBroker;
+using Shared.Core.Notifications;
 using Shared.Core.Persistence;
 using Shared.Guilds.Notifications;
 using Shared.Mongo.MongoRepository;
@@ -87,6 +88,16 @@ internal class GuildService : IGuildService
                                                          IObservable<GuildState> stateObservable) =>
         await Apply(old => old with { DomainEvents = old.DomainEvents.Remove(@event) }, stateObservable);
 
+    public async Task<GuildState> DeleteStateAsync(IObservable<GuildState> stateObservable)
+    {
+        var state = await stateObservable.FirstAsync();
+        if (state.Id is "") return state with {}; // Not persisted yet
+        var id = state.Id;
+        await _repository.DeleteAsync(id);
+        await _messageBroker.NotifyAsync(new GuildDeleted(state.SnowflakeId));
+        return GuildState.Empty;
+    }
+
     private async Task<GuildState> Apply(Func<GuildState, GuildState> transform, IObservable<GuildState> state)
     {
         var currentState = await state.Take(1);
@@ -95,4 +106,8 @@ internal class GuildService : IGuildService
         await _repository.UpdateAsync(newState);
         return newState;
     }
+}
+
+public record GuildDeleted(ulong SnowflakeId) : Notification
+{
 }

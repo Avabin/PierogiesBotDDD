@@ -18,14 +18,14 @@ public record GuildItem : IGuildItem
 
     public async Task<bool> HasStateAsync() => (await State.Select(x => x.Id is not "").FirstAsync());
 
-    public async Task LoadStateAsync(string id)
+    public async Task LoadOrCreateStateAsync(string id)
     {
         if (await HasStateAsync()) return;
         var newState = await _guildService.LoadStateAsync(id);
         State.OnNext(newState);
     }
 
-    public async Task LoadStateAsync(ulong snowflakeId)
+    public async Task LoadOrCreateStateAsync(ulong snowflakeId)
     {
         if (await HasStateAsync()) return;
         var newState = await _guildService.LoadStateAsync(snowflakeId);
@@ -65,6 +65,14 @@ public record GuildItem : IGuildItem
         if (!await HasStateAsync()) return;
 
         var newState = await _guildService.RemoveDomainEventAsync(delivery, StateObservable);
+        State.OnNext(newState);
+    }
+
+    public async Task DeleteStateAsync()
+    {
+        if (!await HasStateAsync()) return;
+        
+        var newState = await _guildService.DeleteStateAsync(StateObservable);
         State.OnNext(newState);
     }
 }

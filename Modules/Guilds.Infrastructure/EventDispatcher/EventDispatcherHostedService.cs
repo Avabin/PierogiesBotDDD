@@ -36,9 +36,8 @@ public class EventDispatcherHostedService : IHostedService
               .Select(x => (x, data: x.Data as ICommand))
               .Where(x => x.data is not null)
               .Do(x => _logger.LogTrace("Handling command {CommandType}", x.data?.GetType().Name))
-#pragma warning disable CS4014
-              .Do(x => HandleCommand(x.data!, x.x))
-#pragma warning restore CS4014
+               // ReSharper disable once MethodSupportsCancellation
+              .Do(x => Task.Run(async () => await HandleCommand(x.data!, x.x)))
               .Subscribe());
 
         _d.Add(rpcObservable

@@ -16,19 +16,19 @@ using Shared.Guilds.Notifications;
 using Shared.Mongo.MongoRepository;
 
 namespace Guilds.Domain.Tests;
-
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
+[Parallelizable(ParallelScope.All)]
 [TestFixture]
 [Category("Unit")]
 public class GuildServiceUnitTests
 {
-    private IMongoRepositoryFactory _guildRepositoryFactory;
-    private IRepository<GuildState> _guildRepository;
-    private IMessageBroker          _messageBroker;
-    private IEventStore             _eventStore;
-    private GuildService            Create() => new(_guildRepositoryFactory, _messageBroker, _eventStore);
+    private readonly IMongoRepositoryFactory _guildRepositoryFactory;
+    private readonly IRepository<GuildState> _guildRepository;
+    private readonly IMessageBroker          _messageBroker;
+    private readonly IEventStore             _eventStore;
+    private          GuildService            Create() => new(_guildRepositoryFactory, _messageBroker, _eventStore);
 
-    [SetUp]
-    public void SetUp()
+    public GuildServiceUnitTests()
     {
         _guildRepositoryFactory = Substitute.For<IMongoRepositoryFactory>();
         _guildRepository        = Substitute.For<IRepository<GuildState>>();

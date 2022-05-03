@@ -10,19 +10,20 @@ using Shared.Core.MessageBroker;
 using Shared.Guilds.Queries;
 
 namespace Guild.Api.Tests;
-
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
+[Parallelizable(ParallelScope.All)]
 [TestFixture]
 [Category("Unit")]
 public class QueryGuildHandlerUnitTests
 {
-    private IGuildsFactory                                          _guildsFactory;
-    private IGuildService                                           _guildService;
-    private Guilds.Domain.Aggregates.GuildAggregate.GuildsAggregate GetGuilds() => new(_guildsFactory);
+    private readonly IGuildsFactory  _guildsFactory;
+    private readonly IGuildService   _guildService;
+    private          GuildsAggregate GetGuilds() => new(_guildsFactory);
 
-    private Guilds.Domain.Aggregates.GuildAggregate.GuildItem GetGuild() => new(_guildService);
+    private GuildItem GetGuild() => new(_guildService);
 
-    [SetUp]
-    public void SetUp()
+
+    public QueryGuildHandlerUnitTests()
     {
         _guildsFactory = Substitute.For<IGuildsFactory>();
         _guildService  = Substitute.For<IGuildService>();

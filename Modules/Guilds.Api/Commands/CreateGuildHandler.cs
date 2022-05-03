@@ -19,7 +19,7 @@ public class CreateGuildHandler : CommandHandler<CreateGuild>
 
         if (guild == null)
         {
-            guild = await _guildsAggregate.CreateGuildAsync(command.SnowflakeId);
+            guild = await _guildsAggregate.LoadOrCreateGuildAsync(command.SnowflakeId);
             await guild.ChangeNameAsync(command.Name);
             if (Context != null) await guild.AddDomainEventAsync(Context);
         }

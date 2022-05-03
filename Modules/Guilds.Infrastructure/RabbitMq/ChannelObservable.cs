@@ -22,7 +22,7 @@ public class ChannelObservable<T> : ChannelObservable, IObservable<Delivery> whe
 
     protected IObservable<Delivery> ReceivedObservable { get; }
 
-    private Delivery Transform(BasicDeliverEventArgs message)
+    private static Delivery Transform(BasicDeliverEventArgs message)
     {
         var   props = message.BasicProperties;
         Guid? correlationId = null;
@@ -41,20 +41,25 @@ public class ChannelObservable<T> : ChannelObservable, IObservable<Delivery> whe
 
         return sub;
     }
-
-    public override void Dispose()
-    {
-        Model.Dispose();
-    }
 }
 
 public abstract class ChannelObservable : EventingBasicConsumer, IDisposable
 {
-    public virtual void Dispose()
+    protected ChannelObservable(IModel model) : base(model)
     {
     }
 
-    protected ChannelObservable(IModel model) : base(model)
+    protected virtual void Dispose(bool disposing)
     {
+        if (disposing)
+        {
+            base.Model.Dispose();
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }

@@ -11,7 +11,8 @@ using Shared.Core.Events;
 using Shared.Core.Queries;
 
 namespace Guilds.Infrastructure.Tests;
-
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
+[NonParallelizable]
 [TestFixture]
 [Category("Integration")]
 public class RabbitMqMessageBrokerIntegrationTests

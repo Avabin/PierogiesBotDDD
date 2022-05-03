@@ -40,8 +40,8 @@
       PB_RabbitMQ__Username: guest
       PB_RabbitMQ__Password: guest
       PB_RabbitMQ__ClientName: Guilds.Persistence
-      PB_RabbitMQ__NatificationTopic: notifications
-      PB_ConnecionStrings__MongoDB: mongodb://mongo:27017
+      PB_RabbitMQ__NotificationTopic: notifications
+      PB_ConnectionStrings__MongoDB: mongodb://mongo:27017
       
   guilds-api:
     build: 
@@ -59,4 +59,4 @@
       PB_RabbitMQ__Username: guest
       PB_RabbitMQ__Password: guest
       PB_RabbitMQ__ClientName: Guilds.WebApi
-      PB_RabbitMQ__NatificationTopic: notifications
+      PB_RabbitMQ__NotificationTopic: notifications

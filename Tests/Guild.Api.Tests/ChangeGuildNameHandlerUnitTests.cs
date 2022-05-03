@@ -13,6 +13,8 @@ using Shared.Guilds.Commands;
 
 namespace Guild.Api.Tests;
 
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
+[Parallelizable(ParallelScope.All)]
 [TestFixture]
 [Category("Unit")]
 public class ChangeGuildNameHandlerUnitTests
@@ -56,7 +58,7 @@ public class ChangeGuildNameHandlerUnitTests
                      await Task.Delay(1);
                      return state with { DomainEvents = state.DomainEvents.Add(delivery) };
                  });
-        await guild.LoadStateAsync(guildId);
+        await guild.LoadOrCreateStateAsync(guildId);
         var handler = new ChangeGuildNameHandler(_guildsAggregate);
         var command = new ChangeGuildName(expected, guildId);
 

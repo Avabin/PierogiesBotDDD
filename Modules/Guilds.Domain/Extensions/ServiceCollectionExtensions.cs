@@ -6,5 +6,5 @@ namespace Guilds.Domain.Extensions;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddGuilds(this IServiceCollection s) =>
-        s.AddTransient<GuildItem>();
+        s.AddTransient<IGuildsAggregate, GuildsAggregate>().AddTransient<IGuildItem, GuildItem>();
 }

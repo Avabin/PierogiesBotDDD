@@ -24,8 +24,6 @@ public static class ServiceCollectionExtensions
             cm.MapProperty(gs => gs.SubscribedChannels).SetSerializer(new ImmutableListSerializer<SubscribedChannel>());
         });
         services.AddTransient<IGuildsFactory, GuildsFactory>();
-        services.AddSingleton<IGuildsAggregate, GuildsAggregate>();
-        services.AddTransient<IGuildItem, GuildItem>();
         services.AddTransient<IGuildService, GuildService>();
         services.AddMongoDb(config.GetConnectionString("MongoDB"), "PierogiesBot");
         return services;

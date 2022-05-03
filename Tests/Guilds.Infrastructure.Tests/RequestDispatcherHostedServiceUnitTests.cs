@@ -14,22 +14,23 @@ using Shared.Core.MessageBroker;
 using Shared.Core.Queries;
 
 namespace Guilds.Infrastructure.Tests;
-
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
+[Parallelizable(ParallelScope.All)]
 [TestFixture]
 [Category("Unit")]
 public class RequestDispatcherHostedServiceUnitTests
 {
-    private IMessageBroker         _messageBroker;
-    private ICommandHandlerFactory _commandHandlerFactory;
-    private IQueryHandlerFactory   _queryHandlerFactory;
+    private readonly IMessageBroker         _messageBroker;
+    private readonly ICommandHandlerFactory _commandHandlerFactory;
+    private readonly IQueryHandlerFactory   _queryHandlerFactory;
 
     private EventDispatcherHostedService Create() =>
         new(_messageBroker, _commandHandlerFactory, _queryHandlerFactory,
             NullLogger<EventDispatcherHostedService>.Instance);
 
-    [SetUp]
-    public void SetUp()
+    public RequestDispatcherHostedServiceUnitTests()
     {
+        
         _messageBroker         = Substitute.For<IMessageBroker>();
         _commandHandlerFactory = Substitute.For<ICommandHandlerFactory>();
         _queryHandlerFactory   = Substitute.For<IQueryHandlerFactory>();

@@ -13,7 +13,6 @@ public class RabbitMqMessageBroker : IMessageBroker, IDisposable
 {
     // RabbitMQ connection settings
     private readonly IOptions<RabbitMqSettings>     _options;
-    private readonly ILoggerFactory                 _loggerFactory;
     private readonly ILogger<RabbitMqMessageBroker> _logger;
     public           RabbitMqSettings               Options              => _options.Value;
     public           string                         RpcCallbackQueueName => $"{Options.ClientName}-callback";
@@ -32,8 +31,7 @@ public class RabbitMqMessageBroker : IMessageBroker, IDisposable
     public RabbitMqMessageBroker(IOptions<RabbitMqSettings> options, ILoggerFactory loggerFactory)
     {
         _options       = options;
-        _loggerFactory = loggerFactory;
-        _logger        = _loggerFactory.CreateLogger<RabbitMqMessageBroker>();
+        _logger        = loggerFactory.CreateLogger<RabbitMqMessageBroker>();
 
         _connectionFactory = new Lazy<ConnectionFactory>(() =>
         {
@@ -204,14 +202,22 @@ public class RabbitMqMessageBroker : IMessageBroker, IDisposable
         return channelObservable.Timeout(Timeout);
     }
 
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            foreach (var channelObservable in _observables.Values)
+            {
+                channelObservable.Dispose();
+            }
+            // dispose connection if value is created
+            if (_connection.IsValueCreated) _connection.Value.Dispose();
+        }
+    }
+
     public void Dispose()
     {
-        // dispose connection if value is created
-        if (_connection.IsValueCreated) _connection.Value.Dispose();
-
-        foreach (var channelObservable in _observables.Values)
-        {
-            channelObservable.Dispose();
-        }
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }
