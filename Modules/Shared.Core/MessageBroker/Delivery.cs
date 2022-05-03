@@ -9,12 +9,14 @@ public interface IDelivery<out T>
     Guid?           CorrelationId { get; }
     DateTimeOffset? Timestamp     { get; }
 }
+
 public record Delivery(IEvent Data, Guid? CorrelationId, DateTimeOffset? Timestamp, string ReplyTo) : IDelivery<IEvent>
 {
-    public static Delivery Of<T>(T data, Guid? correlationId = null, DateTimeOffset? timestamp = null, string? replyTo = null) where T : IEvent
+    public static Delivery Of<T>(T       data, Guid? correlationId = null, DateTimeOffset? timestamp = null,
+                                 string? replyTo = null) where T : IEvent
     {
         correlationId ??= Guid.NewGuid();
-        timestamp ??= DateTimeOffset.UtcNow;
+        timestamp     ??= DateTimeOffset.UtcNow;
         return new Delivery(data, correlationId, timestamp, replyTo ?? "");
     }
 

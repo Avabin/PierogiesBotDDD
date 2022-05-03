@@ -28,7 +28,9 @@ public static class ServiceCollectionExtensions
         });
         return _;
     }
-    public static IServiceCollection AddMongoDb(this IServiceCollection services, string connectionString, string databaseName)
+
+    public static IServiceCollection AddMongoDb(this IServiceCollection services, string connectionString,
+                                                string                  databaseName)
     {
         services.ConfigureMongoBaseSerializers();
         services.AddOptions<MongoSettings>().Configure(x => x.Database = databaseName);

@@ -7,9 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Guilds.Domain\Guilds.Domain.csproj" />
-      <ProjectReference Include="..\Shared.Core\Shared.Core.csproj" />
-      <ProjectReference Include="..\Shared.Guilds\Shared.Guilds.csproj" />
+        <ProjectReference Include="..\Guilds.Domain\Guilds.Domain.csproj"/>
+        <ProjectReference Include="..\Shared.Core\Shared.Core.csproj"/>
+        <ProjectReference Include="..\Shared.Guilds\Shared.Guilds.csproj"/>
     </ItemGroup>
 
 </Project>

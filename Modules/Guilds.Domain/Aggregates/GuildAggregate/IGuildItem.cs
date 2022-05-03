@@ -15,5 +15,4 @@ public interface IGuildItem
 
     Task AddDomainEventAsync(IDelivery<IEvent>    delivery);
     Task RemoveDomainEventAsync(IDelivery<IEvent> delivery);
-    
 }

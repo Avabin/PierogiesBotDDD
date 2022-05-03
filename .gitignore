@@ -6,3 +6,5 @@ riderModule.iml
 .idea/
 TestResults/
 *.trx
+.sonarqube/
+*.user

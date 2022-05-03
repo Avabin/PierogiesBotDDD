@@ -5,5 +5,4 @@ namespace Shared.Guilds.Queries;
 
 public record QueryGuildResult(GuildView Guild) : Event
 {
-    
 }

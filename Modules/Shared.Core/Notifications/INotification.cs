@@ -4,5 +4,4 @@ namespace Shared.Core.Notifications;
 
 public interface INotification : IEvent
 {
-    
 }

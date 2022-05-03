@@ -15,6 +15,7 @@ public class QueryGuildHandler : QueryHandler<QueryGuild>
     {
         _guildsAggregate = guildsAggregate;
     }
+
     public override async Task<IEvent> HandleAsync(QueryGuild query)
     {
         var guild = await _guildsAggregate.GetGuildAsync(query.SnowflakeId);

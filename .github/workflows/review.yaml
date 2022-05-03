@@ -42,7 +42,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         run: |
-          ./.sonar/scanner/dotnet-sonarscanner begin /k:"Avabin_PierogiesBotDDD" /o:"avabin" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          ./.sonar/scanner/dotnet-sonarscanner begin /k:"Avabin_PierogiesBotDDD" /o:"avabin" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/TestResults/coverage.opencover.xml"
       - name: Build
         run: dotnet build
       - name: Set up test dependencies
@@ -57,7 +57,7 @@ jobs:
           echo "MongoDB is up and accepting connections"
           sleep 10
       - name: Run tests
-        run: dotnet test --no-build --logger "trx;LogFileName=results.trx"
+        run: dotnet test --no-build /p:CollectCoverage=true /p:CoverletOutput="TestResults/" /p:CoverletOutputFormat="opencover"
       - name: End scan
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any

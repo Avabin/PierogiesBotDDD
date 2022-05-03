@@ -3,7 +3,8 @@ using MongoDB.Bson.Serialization;
 
 namespace Shared.Mongo.Serializers;
 
-public class ImmutableListSerializer<T> : ValueEnumerableSerializerBase<ImmutableList<T>, T>, IChildSerializerConfigurable
+public class ImmutableListSerializer<T> : ValueEnumerableSerializerBase<ImmutableList<T>, T>,
+                                          IChildSerializerConfigurable
 {
     public ImmutableListSerializer()
     {

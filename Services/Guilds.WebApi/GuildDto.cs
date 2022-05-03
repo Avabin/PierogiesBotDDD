@@ -2,5 +2,4 @@
 
 public record GuildDto(string Name)
 {
-    
 }

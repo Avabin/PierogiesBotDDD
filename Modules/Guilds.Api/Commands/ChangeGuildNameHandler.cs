@@ -13,6 +13,7 @@ public class ChangeGuildNameHandler : CommandHandler<ChangeGuildName>
     {
         _guildsAggregate = guildsAggregate;
     }
+
     public override async Task HandleAsync(ChangeGuildName command)
     {
         var guild = await _guildsAggregate.GetGuildAsync(command.GuildId);

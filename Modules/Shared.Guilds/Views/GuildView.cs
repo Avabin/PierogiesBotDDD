@@ -2,7 +2,7 @@
 
 namespace Shared.Guilds.Views;
 
-public record GuildView(string Name, ulong SnowflakeId, ImmutableList<SubscribedChannelView> SubscribedChannels, string Id)
+public record GuildView(string Name, ulong SnowflakeId, ImmutableList<SubscribedChannelView> SubscribedChannels,
+                        string Id)
 {
-    
 }

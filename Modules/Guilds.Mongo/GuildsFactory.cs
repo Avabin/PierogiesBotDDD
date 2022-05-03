@@ -11,6 +11,7 @@ internal class GuildsFactory : IGuildsFactory
     {
         _serviceProvider = serviceProvider;
     }
-    public IGuildItem Create() => 
+
+    public IGuildItem Create() =>
         _serviceProvider.GetRequiredService<IGuildItem>();
 }

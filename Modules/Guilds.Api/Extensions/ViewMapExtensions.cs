@@ -11,6 +11,6 @@ public static class ViewMapExtensions
         return new GuildView(guild.Name, guild.SnowflakeId,
                              guild.SubscribedChannels.Select(ToView).ToImmutableList(), guild.Id);
     }
-    
+
     public static SubscribedChannelView ToView(this SubscribedChannel channel) => new(channel.Name, channel.ChannelId);
 }

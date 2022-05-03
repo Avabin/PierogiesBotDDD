@@ -31,7 +31,7 @@ public class ChannelObservable<T> : ChannelObservable, IObservable<Delivery> whe
         var replyTo = props.ReplyTo;
 
         var @event = message.Body.ToArray().ToEvent<T>();
-        
+
         return Delivery.Of(@event, correlationId, timestamp, replyTo);
     }
 

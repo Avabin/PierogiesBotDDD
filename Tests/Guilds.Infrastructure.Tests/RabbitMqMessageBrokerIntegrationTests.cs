@@ -200,7 +200,6 @@ public class RabbitMqMessageBrokerIntegrationTests
 
 public record QueryIntResult(int Value) : Event
 {
-    
 }
 
 public record QueryInt : Query

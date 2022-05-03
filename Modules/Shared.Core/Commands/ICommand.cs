@@ -4,5 +4,4 @@ namespace Shared.Core.Commands;
 
 public interface ICommand : IEvent
 {
-    
 }

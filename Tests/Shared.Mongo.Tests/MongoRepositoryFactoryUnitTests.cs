@@ -16,8 +16,8 @@ namespace Shared.Mongo.Tests;
 [Category("Unit")]
 public class MongoRepositoryFactoryUnitTests
 {
-    private IServiceProvider _serviceProvider;
-    private IMongoClient     _client;
+    private IServiceProvider        _serviceProvider;
+    private IMongoClient            _client;
     private IOptions<MongoSettings> _settings;
 
 
@@ -31,21 +31,21 @@ public class MongoRepositoryFactoryUnitTests
         _serviceProvider.GetService<IMongoClient>().Returns(_client);
         _serviceProvider.GetService<IOptions<MongoSettings>>().Returns(_settings);
         _serviceProvider.GetService<ILogger<MongoRepository<Entity>>>()
-            .Returns(NullLogger<MongoRepository<Entity>>.Instance);
+                        .Returns(NullLogger<MongoRepository<Entity>>.Instance);
     }
 
     [Test]
     public void When_Create_ReturnsNewInstance()
     {
         // Arrange
-        var sut = new MongoRepositoryFactory(_serviceProvider);
-        var expected       = "entities";
-        
-        
+        var sut      = new MongoRepositoryFactory(_serviceProvider);
+        var expected = "entities";
+
+
         // Act
-        var result         = sut.Create<Entity>(expected);
+        var result = sut.Create<Entity>(expected);
         var actual = (result as MongoRepository<Entity>)?.CollectionName;
-        
+
         // Assert
         result.Should().NotBeNull();
         actual.Should().Be(expected);

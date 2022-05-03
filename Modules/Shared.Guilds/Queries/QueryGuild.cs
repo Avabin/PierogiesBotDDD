@@ -4,5 +4,4 @@ namespace Shared.Guilds.Queries;
 
 public record QueryGuild(ulong SnowflakeId) : Query
 {
-    
 }

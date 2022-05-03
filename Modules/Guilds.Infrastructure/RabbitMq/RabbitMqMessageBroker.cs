@@ -88,7 +88,7 @@ public class RabbitMqMessageBroker : IMessageBroker, IDisposable
         channel.BasicPublish("", IMessageBroker.RpcQueueName, basicProperties: props, request.ToMessageBody());
         _logger.LogTrace("{ActionName}: Waiting for response of type {ResponseType} for Id {CorrelationId}",
                          nameof(SendAndReceiveAsync), typeof(TResult).Name, props.CorrelationId);
-        var response    = await channelObservable.FirstAsync().Timeout(Timeout);
+        var response = await channelObservable.FirstAsync().Timeout(Timeout);
 
         _logger.LogTrace("{ActionName}: Received response of type {ResponseType} for Id {CorrelationId}",
                          nameof(SendAndReceiveAsync), typeof(TResult).Name, props.CorrelationId);

@@ -6,7 +6,8 @@ using MongoDB.Driver;
 using Shared.Core.Persistence;
 using Shared.Core.SeedWork;
 
-[assembly:InternalsVisibleTo("Shared.Mongo.Tests")]
+[assembly: InternalsVisibleTo("Shared.Mongo.Tests")]
+
 namespace Shared.Mongo.MongoRepository;
 
 internal class MongoRepositoryFactory : IMongoRepositoryFactory
@@ -17,11 +18,12 @@ internal class MongoRepositoryFactory : IMongoRepositoryFactory
     {
         _serviceProvider = serviceProvider;
     }
+
     public IRepository<T> Create<T>(string collectionName) where T : Entity
     {
         var mongoClient  = _serviceProvider.GetRequiredService<IMongoClient>();
         var mongoOptions = _serviceProvider.GetRequiredService<IOptions<MongoSettings>>();
-        var logger = _serviceProvider.GetRequiredService<ILogger<MongoRepository<T>>>();
+        var logger       = _serviceProvider.GetRequiredService<ILogger<MongoRepository<T>>>();
         return new MongoRepository<T>(mongoClient, mongoOptions, collectionName, logger);
     }
 }

@@ -2,5 +2,4 @@
 
 public record DeleteGuild(ulong GuildId) : GuildCommandBase(GuildId)
 {
-    
 }

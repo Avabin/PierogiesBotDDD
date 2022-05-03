@@ -10,7 +10,7 @@ internal class EventStore : IEventStore
 {
     private const    string                  CollectionName = "Events";
     private readonly IOptions<MongoSettings> _options;
-    private readonly ILogger<EventStore> _logger;
+    private readonly ILogger<EventStore>     _logger;
     protected        MongoSettings           Settings => _options.Value;
 
     private readonly Lazy<IMongoCollection<IDelivery<IEvent>>> _events;
@@ -19,7 +19,7 @@ internal class EventStore : IEventStore
     public EventStore(IMongoClient client, IOptions<MongoSettings> options, ILogger<EventStore> logger)
     {
         _options = options;
-        _logger = logger;
+        _logger  = logger;
 
         _events = new Lazy<IMongoCollection<IDelivery<IEvent>>>(() =>
         {
@@ -28,6 +28,7 @@ internal class EventStore : IEventStore
             return client.GetDatabase(Settings.Database).GetCollection<IDelivery<IEvent>>(CollectionName);
         });
     }
+
     public IQueryable<IDelivery<IEvent>> Query()
     {
         _logger.LogTrace("Events query requested");

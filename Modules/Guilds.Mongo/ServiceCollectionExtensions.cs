@@ -16,13 +16,12 @@ public static class ServiceCollectionExtensions
         BsonClassMap.RegisterClassMap<ChangeGuildName>();
         BsonClassMap.RegisterClassMap<SubscribeChannel>();
         BsonClassMap.RegisterClassMap<UnsubscribeChannel>();
-        
+
         // Entities
         BsonClassMap.RegisterClassMap<GuildState>(cm =>
         {
             cm.AutoMap();
             cm.MapProperty(gs => gs.SubscribedChannels).SetSerializer(new ImmutableListSerializer<SubscribedChannel>());
-            
         });
         services.AddTransient<IGuildsFactory, GuildsFactory>();
         services.AddSingleton<IGuildsAggregate, GuildsAggregate>();

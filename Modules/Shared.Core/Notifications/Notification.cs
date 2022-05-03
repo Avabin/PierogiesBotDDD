@@ -2,4 +2,6 @@
 
 namespace Shared.Core.Notifications;
 
-public record Notification : Event, INotification {}
+public record Notification : Event, INotification
+{
+}

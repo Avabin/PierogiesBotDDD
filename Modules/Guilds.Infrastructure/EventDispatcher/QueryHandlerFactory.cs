@@ -11,11 +11,12 @@ public class QueryHandlerFactory : IQueryHandlerFactory
     {
         _serviceProvider = serviceProvider;
     }
-    public IQueryHandler<TQuery> GetHandler<TQuery>() where TQuery : IQuery => 
+
+    public IQueryHandler<TQuery> GetHandler<TQuery>() where TQuery : IQuery =>
         _serviceProvider.GetRequiredService<IQueryHandler<TQuery>>();
 
     public IQueryHandler GetHandler(Type queryType)
     {
-        return (IQueryHandler) _serviceProvider.GetRequiredService(typeof(IQueryHandler<>).MakeGenericType(queryType));
+        return (IQueryHandler)_serviceProvider.GetRequiredService(typeof(IQueryHandler<>).MakeGenericType(queryType));
     }
 }

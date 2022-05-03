@@ -4,6 +4,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 
 namespace Shared.Mongo.Serializers;
+
 // https://stackoverflow.com/a/57829411
 public abstract class ValueEnumerableSerializerBase<TValue, TItem> : SerializerBase<TValue>, IBsonArraySerializer
     where TValue : IEnumerable<TItem>
@@ -41,6 +42,7 @@ public abstract class ValueEnumerableSerializerBase<TValue, TItem> : SerializerB
         IBsonReader reader = context.Reader;
 
         BsonType currentBsonType = reader.GetCurrentBsonType();
+
         switch (currentBsonType)
         {
             case BsonType.Null:
@@ -52,11 +54,13 @@ public abstract class ValueEnumerableSerializerBase<TValue, TItem> : SerializerB
             {
                 reader.ReadStartArray();
                 object accumulator = CreateAccumulator();
+
                 while (reader.ReadBsonType() != BsonType.EndOfDocument)
                 {
                     TItem item = _lazyItemSerializer.Value.Deserialize(context);
                     AddItem(accumulator, item);
                 }
+
                 reader.ReadEndArray();
                 return FinalizeResult(accumulator);
             }

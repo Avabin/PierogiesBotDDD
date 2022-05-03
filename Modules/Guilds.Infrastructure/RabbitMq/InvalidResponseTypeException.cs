@@ -4,6 +4,5 @@ public class InvalidResponseTypeException : Exception
 {
     public InvalidResponseTypeException(string msg) : base(msg)
     {
-
     }
 }

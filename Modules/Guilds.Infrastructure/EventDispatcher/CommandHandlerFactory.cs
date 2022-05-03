@@ -11,12 +11,13 @@ internal class CommandHandlerFactory : ICommandHandlerFactory
     {
         _serviceProvider = serviceProvider;
     }
-    public ICommandHandler<TCommand> GetHandler<TCommand>() where TCommand : ICommand => 
+
+    public ICommandHandler<TCommand> GetHandler<TCommand>() where TCommand : ICommand =>
         _serviceProvider.GetRequiredService<ICommandHandler<TCommand>>();
-    
+
     public ICommandHandler GetHandler(Type commandType)
     {
         var handlerType = typeof(ICommandHandler<>).MakeGenericType(commandType);
-        return (ICommandHandler) _serviceProvider.GetRequiredService(handlerType);
+        return (ICommandHandler)_serviceProvider.GetRequiredService(handlerType);
     }
 }

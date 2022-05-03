@@ -12,7 +12,9 @@ public class GuildsAggregate : IAggregateRoot, IGuildsAggregate
     {
         _guildsFactory = guildsFactory;
     }
-    public async Task<IGuildItem?> GetGuildAsync(ulong snowflakeId) => _guilds.TryGetValue(snowflakeId, out var guild) ? guild : null;
+
+    public async Task<IGuildItem?> GetGuildAsync(ulong snowflakeId) =>
+        _guilds.TryGetValue(snowflakeId, out var guild) ? guild : null;
 
     public async Task<IGuildItem> CreateGuildAsync(ulong snowflakeId)
     {
@@ -20,7 +22,7 @@ public class GuildsAggregate : IAggregateRoot, IGuildsAggregate
         await guild.LoadStateAsync(snowflakeId);
 
         _guilds.TryAdd(snowflakeId, guild);
-        
+
         return guild;
     }
 }

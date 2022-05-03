@@ -24,7 +24,8 @@ public class RequestDispatcherHostedServiceUnitTests
     private IQueryHandlerFactory   _queryHandlerFactory;
 
     private EventDispatcherHostedService Create() =>
-        new(_messageBroker, _commandHandlerFactory, _queryHandlerFactory, NullLogger<EventDispatcherHostedService>.Instance);
+        new(_messageBroker, _commandHandlerFactory, _queryHandlerFactory,
+            NullLogger<EventDispatcherHostedService>.Instance);
 
     [SetUp]
     public void SetUp()
@@ -55,31 +56,32 @@ public class RequestDispatcherHostedServiceUnitTests
         await Task.Delay(TimeSpan.FromMilliseconds(100));
         await commandHandler.Received().HandleAsync(Arg.Is<ICommand>(command));
     }
-    
+
     [Test]
     public async Task When_StartAsync_And_QueryArrived_Then_QueryHandler_Is_Invoked_And_Result_IsSent()
     {
         // Arrange
-        var query         = new TestQuery();
-        var queryHandler  = Substitute.For<IQueryHandler<IQuery>>();
+        var query          = new TestQuery();
+        var queryHandler   = Substitute.For<IQueryHandler<IQuery>>();
         var queriesSubject = new Subject<Delivery>();
-        var result = new TestQueryResult();
-        
+        var result         = new TestQueryResult();
+
         var correlationId = Guid.NewGuid();
         var replyTo       = "reply-callback";
-        
+
         _queryHandlerFactory.GetHandler(Arg.Any<Type>()).Configure().Returns(queryHandler);
         _messageBroker.GetObservableForQueue<IEvent>(Arg.Any<string>()).Returns(queriesSubject.AsObservable());
-        _messageBroker.SendToQueueAsync(Arg.Is(result), Arg.Is(replyTo), Arg.Is(correlationId)).Returns(ValueTask.CompletedTask);
-        
-        queryHandler.HandleAsync(Arg.Is(query)).Returns(Task.FromResult((IEvent) result));
-        
+        _messageBroker.SendToQueueAsync(Arg.Is(result), Arg.Is(replyTo), Arg.Is(correlationId))
+                      .Returns(ValueTask.CompletedTask);
+
+        queryHandler.HandleAsync(Arg.Is(query)).Returns(Task.FromResult((IEvent)result));
+
         var sut = Create();
-        
+
         // Act
         await sut.StartAsync(CancellationToken.None);
         queriesSubject.OnNext(Delivery.Of(query, correlationId, DateTimeOffset.Now, replyTo));
-        
+
         // Assert
         await sut.StopAsync(CancellationToken.None);
         await queryHandler.Received(1).HandleAsync(Arg.Is(query));

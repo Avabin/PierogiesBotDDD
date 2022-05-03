@@ -10,11 +10,13 @@ public class CreateGuildHandler : CommandHandler<CreateGuild>
 
     public CreateGuildHandler(IGuildsAggregate guildsAggregate)
     {
-        _guildsAggregate    = guildsAggregate;
+        _guildsAggregate = guildsAggregate;
     }
+
     public override async Task HandleAsync(CreateGuild command)
     {
         var guild = await _guildsAggregate.GetGuildAsync(command.SnowflakeId);
+
         if (guild == null)
         {
             guild = await _guildsAggregate.CreateGuildAsync(command.SnowflakeId);

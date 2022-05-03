@@ -15,8 +15,8 @@ namespace Guild.Api.Tests;
 [Category("Unit")]
 public class QueryGuildHandlerUnitTests
 {
-    private IGuildsFactory                                 _guildsFactory;
-    private IGuildService                                  _guildService;
+    private IGuildsFactory                                          _guildsFactory;
+    private IGuildService                                           _guildService;
     private Guilds.Domain.Aggregates.GuildAggregate.GuildsAggregate GetGuilds() => new(_guildsFactory);
 
     private Guilds.Domain.Aggregates.GuildAggregate.GuildItem GetGuild() => new(_guildService);
@@ -43,10 +43,10 @@ public class QueryGuildHandlerUnitTests
 
         _guildsFactory.Create().Returns(guild);
         _guildService.LoadStateAsync(Arg.Is(guildId)).Returns(guildState);
-        
+
         // Act
         var result = await handler.HandleAsync(query);
-        
+
         // Assert
         result.Should().BeOfType<QueryGuildResult>();
     }

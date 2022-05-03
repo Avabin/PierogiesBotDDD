@@ -17,7 +17,8 @@ namespace Guilds.Domain.Tests;
 public class GuildUnitTests
 {
     private IGuildService _service;
-    private GuildItem         CreateGuild() => new(_service);
+    private GuildItem     CreateGuild() => new(_service);
+
     [SetUp]
     public void Setup()
     {
@@ -29,44 +30,46 @@ public class GuildUnitTests
     {
         // Arrange
         var sut = CreateGuild();
-        
+
         // Act
         var hasState = await sut.HasStateAsync();
-        
+
         // Assert
         hasState.Should().BeFalse();
     }
-    
+
     [Test]
     public async Task When_LoadState_StateIsPublished()
     {
         // Arrange
         var sut = CreateGuild();
-        var id         = "123";
-        var expected = new GuildState("Old Nae", 123123123ul, ImmutableList<SubscribedChannel>.Empty, ImmutableList<IDelivery<IEvent>>.Empty, id);
-        
+        var id  = "123";
+        var expected = new GuildState("Old Nae", 123123123ul, ImmutableList<SubscribedChannel>.Empty,
+                                      ImmutableList<IDelivery<IEvent>>.Empty, id);
+
         _service.LoadStateAsync(Arg.Is(id)).Returns(expected);
         // Act
         await sut.LoadStateAsync(id);
         var actual = await sut.StateObservable.FirstAsync();
-        
+
         // Assert
         actual.Should().Be(expected);
     }
-    
+
     [Test]
     public async Task When_LoadState_AndStateIsLoaded_NothingHappens()
     {
         // Arrange
         var sut = CreateGuild();
-        var id         = "123";
-        var expected = new GuildState("Old Nae", 123123123ul, ImmutableList<SubscribedChannel>.Empty, ImmutableList<IDelivery<IEvent>>.Empty, id);
-        
+        var id  = "123";
+        var expected = new GuildState("Old Nae", 123123123ul, ImmutableList<SubscribedChannel>.Empty,
+                                      ImmutableList<IDelivery<IEvent>>.Empty, id);
+
         _service.LoadStateAsync(Arg.Is(id)).Returns(expected);
         await sut.LoadStateAsync(id);
         // Act
         await sut.LoadStateAsync(id);
-        
+
         // Assert
         await _service.Received(1).LoadStateAsync(Arg.Any<string>());
     }
@@ -75,22 +78,23 @@ public class GuildUnitTests
     public async Task When_ChangeNameCalled_NewStateIsPublished()
     {
         // Arrange
-        var sut        = CreateGuild();
-        var id         = "123";
-        var expected    = "New Name";
-        var guildState = new GuildState( "Old Nae", 123123123ul, ImmutableList<SubscribedChannel>.Empty, ImmutableList<IDelivery<IEvent>>.Empty, id);
+        var sut      = CreateGuild();
+        var id       = "123";
+        var expected = "New Name";
+        var guildState = new GuildState("Old Nae", 123123123ul, ImmutableList<SubscribedChannel>.Empty,
+                                        ImmutableList<IDelivery<IEvent>>.Empty, id);
 
         _service.LoadStateAsync(Arg.Is(id)).Returns(guildState);
         _service.ChangeNameAsync(Arg.Any<string>(), Arg.Any<IObservable<GuildState>>())
                 .Returns(guildState with { Name = expected });
 
         await sut.LoadStateAsync(id);
-        
+
         // Act
         await sut.ChangeNameAsync(expected);
         var result = await sut.StateObservable.FirstAsync();
         var actual = result.Name;
-        
+
         // Assert
         actual.Should().Be(expected);
     }
@@ -99,24 +103,29 @@ public class GuildUnitTests
     public async Task When_SubscribeChannel_NewStateIsPublished()
     {
         // Arrange
-        var sut        = CreateGuild();
-        var id         = "123";
+        var sut      = CreateGuild();
+        var id       = "123";
         var expected = new SubscribedChannel("channel", 123ul);
-        var guildState = new GuildState( "Old Nae", 123123123ul, ImmutableList<SubscribedChannel>.Empty, ImmutableList<IDelivery<IEvent>>.Empty, id);
+        var guildState = new GuildState("Old Nae", 123123123ul, ImmutableList<SubscribedChannel>.Empty,
+                                        ImmutableList<IDelivery<IEvent>>.Empty, id);
 
         _service.LoadStateAsync(Arg.Is(id)).Returns(guildState);
-        _service.SubscribeChannelAsync(Arg.Is(expected.Name), Arg.Is(expected.ChannelId), Arg.Any<IObservable<GuildState>>())
-                .Returns(guildState with {SubscribedChannels = new List<SubscribedChannel> { expected }.ToImmutableList()});
-        
+        _service.SubscribeChannelAsync(Arg.Is(expected.Name), Arg.Is(expected.ChannelId),
+                                       Arg.Any<IObservable<GuildState>>())
+                .Returns(guildState with
+                 {
+                     SubscribedChannels = new List<SubscribedChannel> { expected }.ToImmutableList()
+                 });
+
         await sut.LoadStateAsync(id);
         // Act
         await sut.SubscribeChannelAsync(expected.Name, expected.ChannelId);
         var actual = await sut.StateObservable.FirstAsync();
-        
+
         // Assert
         actual.SubscribedChannels.Should().Contain(expected);
     }
-    
+
     [Test]
     public async Task When_UnsubscribeChannel_NewStateIsPublished()
     {
@@ -124,19 +133,19 @@ public class GuildUnitTests
         var sut        = CreateGuild();
         var id         = "123";
         var channelId  = 123ul;
-        var removed = new SubscribedChannel("channel", channelId);
-        var channels = new List<SubscribedChannel> { removed }.ToImmutableList();
+        var removed    = new SubscribedChannel("channel", channelId);
+        var channels   = new List<SubscribedChannel> { removed }.ToImmutableList();
         var guildState = new GuildState("Old Nae", 123123123ul, channels, ImmutableList<IDelivery<IEvent>>.Empty, id);
 
         _service.LoadStateAsync(Arg.Is(id)).Returns(guildState);
         _service.UnsubscribeChannelAsync(Arg.Is(channelId), Arg.Any<IObservable<GuildState>>())
-                .Returns(guildState with {SubscribedChannels = new List<SubscribedChannel> {  }.ToImmutableList()});
-        
+                .Returns(guildState with { SubscribedChannels = new List<SubscribedChannel> { }.ToImmutableList() });
+
         await sut.LoadStateAsync(id);
         // Act
         await sut.UnsubscribeChannelAsync(channelId);
         var actual = await sut.StateObservable.FirstAsync();
-        
+
         // Assert
         actual.SubscribedChannels.Should().NotContain(removed);
     }

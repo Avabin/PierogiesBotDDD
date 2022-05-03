@@ -13,6 +13,7 @@ public class SubscribeChannelHandler : CommandHandler<SubscribeChannel>
     {
         _guildsAggregate = guildsAggregate;
     }
+
     public override async Task HandleAsync(SubscribeChannel command)
     {
         var guild = await _guildsAggregate.GetGuildAsync(command.GuildId);
@@ -20,7 +21,7 @@ public class SubscribeChannelHandler : CommandHandler<SubscribeChannel>
         if (guild is not null)
         {
             var channels = await guild.StateObservable.Select(x => x.SubscribedChannels).FirstAsync();
-            if(channels.Any(x => x.ChannelId == command.ChannelId)) return;
+            if (channels.Any(x => x.ChannelId == command.ChannelId)) return;
             await guild.SubscribeChannelAsync(command.Name, command.ChannelId);
             if (Context is not null) await guild.AddDomainEventAsync(Context);
         }

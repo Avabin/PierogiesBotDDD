@@ -4,5 +4,4 @@ namespace Shared.Guilds.Notifications;
 
 public record GuildCreated(string Name, ulong SnowflakeId) : Notification
 {
-    
 }

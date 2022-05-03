@@ -5,7 +5,7 @@ namespace Shared.Core.Queries;
 public interface IQueryHandler<in TQuery> : IQueryHandler where TQuery : IQuery
 {
     Task<IEvent>                  HandleAsync(TQuery query);
-    public new async Task<IEvent> HandleAsync(IQuery query) => await HandleAsync((TQuery) query);
+    public new async Task<IEvent> HandleAsync(IQuery query) => await HandleAsync((TQuery)query);
 }
 
 public interface IQueryHandler
@@ -17,5 +17,5 @@ public abstract class QueryHandler<TQuery> : IQueryHandler<TQuery> where TQuery 
 {
     public abstract Task<IEvent> HandleAsync(TQuery query);
 
-    public async Task<IEvent> HandleAsync(IQuery query) => await HandleAsync((TQuery) query);
+    public async Task<IEvent> HandleAsync(IQuery query) => await HandleAsync((TQuery)query);
 }

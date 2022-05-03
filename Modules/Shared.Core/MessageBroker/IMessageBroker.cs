@@ -7,10 +7,12 @@ namespace Shared.Core.MessageBroker;
 public interface IMessageBroker
 {
     public static string RpcQueueName => "rpc_queue";
-    ValueTask<TResult>         SendAndReceiveAsync<TRequest, TResult>(TRequest request) where TResult : IEvent where TRequest : IEvent;
 
-    IObservable<Delivery> GetNotificationsObservable<T>(string routingKey = "") where T : INotification;
-    ValueTask NotifyAsync<T>(T message, string routingKey = "") where T : INotification;
+    ValueTask<TResult> SendAndReceiveAsync<TRequest, TResult>(TRequest request)
+        where TResult : IEvent where TRequest : IEvent;
+
+    IObservable<Delivery> GetNotificationsObservable<T>(string routingKey                 = "") where T : INotification;
+    ValueTask             NotifyAsync<T>(T                     message, string routingKey = "") where T : INotification;
 
     ValueTask SendToTopicAsync<T>(T message, string topic, string routingKey = "*") where T : IEvent;
 
@@ -20,5 +22,6 @@ public interface IMessageBroker
 
     IObservable<Delivery> GetObservableForQueue<T>(string queueName) where T : IEvent;
 
-    public async ValueTask SendCommandAsync<T>(T command) where T : ICommand => await SendToQueueAsync(command, RpcQueueName);
+    public async ValueTask SendCommandAsync<T>(T command) where T : ICommand =>
+        await SendToQueueAsync(command, RpcQueueName);
 }

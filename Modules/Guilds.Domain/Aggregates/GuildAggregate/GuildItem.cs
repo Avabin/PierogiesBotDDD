@@ -24,26 +24,27 @@ public record GuildItem : IGuildItem
         var newState = await _guildService.LoadStateAsync(id);
         State.OnNext(newState);
     }
+
     public async Task LoadStateAsync(ulong snowflakeId)
     {
         if (await HasStateAsync()) return;
         var newState = await _guildService.LoadStateAsync(snowflakeId);
         State.OnNext(newState);
     }
-    
+
     public async Task ChangeNameAsync(string name)
     {
         var newState = await _guildService.ChangeNameAsync(name, StateObservable);
         State.OnNext(newState);
     }
-    
+
     // Subscribe to channel
     public async Task SubscribeChannelAsync(string name, ulong channelId)
     {
         var newState = await _guildService.SubscribeChannelAsync(name, channelId, StateObservable);
         State.OnNext(newState);
     }
-    
+
     // Unsubscribe from channel
     public async Task UnsubscribeChannelAsync(ulong channelId)
     {
@@ -54,7 +55,7 @@ public record GuildItem : IGuildItem
     public async Task AddDomainEventAsync(IDelivery<IEvent> delivery)
     {
         if (!await HasStateAsync()) return;
-        
+
         var newState = await _guildService.AddDomainEventAsync(delivery, StateObservable);
         State.OnNext(newState);
     }
@@ -62,7 +63,7 @@ public record GuildItem : IGuildItem
     public async Task RemoveDomainEventAsync(IDelivery<IEvent> delivery)
     {
         if (!await HasStateAsync()) return;
-        
+
         var newState = await _guildService.RemoveDomainEventAsync(delivery, StateObservable);
         State.OnNext(newState);
     }
