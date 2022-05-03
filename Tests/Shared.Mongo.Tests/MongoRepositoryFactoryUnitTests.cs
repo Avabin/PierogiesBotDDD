@@ -1,6 +1,8 @@
 ﻿using System;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using NSubstitute;
@@ -17,7 +19,7 @@ public class MongoRepositoryFactoryUnitTests
     private IServiceProvider _serviceProvider;
     private IMongoClient     _client;
     private IOptions<MongoSettings> _settings;
-    
+
 
     [SetUp]
     public void SetUp()
@@ -28,6 +30,8 @@ public class MongoRepositoryFactoryUnitTests
 
         _serviceProvider.GetService<IMongoClient>().Returns(_client);
         _serviceProvider.GetService<IOptions<MongoSettings>>().Returns(_settings);
+        _serviceProvider.GetService<ILogger<MongoRepository<TestEntity>>>()
+            .Returns(NullLogger<MongoRepository<TestEntity>>.Instance);
     }
 
     [Test]

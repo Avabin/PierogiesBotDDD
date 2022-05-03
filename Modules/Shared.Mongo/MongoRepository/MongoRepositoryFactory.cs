@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Shared.Core.Persistence;
@@ -20,6 +21,7 @@ internal class MongoRepositoryFactory : IMongoRepositoryFactory
     {
         var mongoClient  = _serviceProvider.GetRequiredService<IMongoClient>();
         var mongoOptions = _serviceProvider.GetRequiredService<IOptions<MongoSettings>>();
-        return new MongoRepository<T>(mongoClient, mongoOptions, collectionName);
+        var logger = _serviceProvider.GetRequiredService<ILogger<MongoRepository<T>>>();
+        return new MongoRepository<T>(mongoClient, mongoOptions, collectionName, logger);
     }
 }

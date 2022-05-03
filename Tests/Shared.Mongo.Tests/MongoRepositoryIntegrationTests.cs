@@ -3,6 +3,8 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Guilds.Domain.Aggregates.GuildAggregate;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -23,7 +25,10 @@ public class MongoRepositoryIntegrationTests
 {
     private IMongoClient _mongoClient;
     private IOptions<MongoSettings> _options;
-    
+    private ILogger<MongoRepository<TestEntity>> _logger;
+
+    private MongoRepository<TestEntity> Create(string collectionName) =>
+        new(_mongoClient, _options, collectionName, _logger);
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
@@ -56,6 +61,7 @@ public class MongoRepositoryIntegrationTests
         {
             Database = Guid.NewGuid().ToString(), 
         });
+        _logger = NullLogger<MongoRepository<TestEntity>>.Instance;
     }
     
     [TearDown]
@@ -79,8 +85,8 @@ public class MongoRepositoryIntegrationTests
         var collection     = database.GetCollection<TestEntity>(collectionName);
         var expected            = new TestEntity("", ImmutableList<IDelivery<IEvent>>.Empty);
         await collection.InsertOneAsync(expected);
-        
-        var repository = new MongoRepository<TestEntity>(_mongoClient, _options, collectionName);
+
+        var repository = Create(collectionName);
         
         // Act
         var actual = await repository.FindByIdAsync(expected.Id);
@@ -98,7 +104,7 @@ public class MongoRepositoryIntegrationTests
         var collection     = database.GetCollection<TestEntity>(collectionName);
         var doc            = new TestEntity("", ImmutableList<IDelivery<IEvent>>.Empty);
         
-        var repository = new MongoRepository<TestEntity>(_mongoClient, _options, collectionName);
+        var repository = Create(collectionName);
         
         // Act
         var actual = await repository.InsertAsync(doc);
@@ -120,7 +126,7 @@ public class MongoRepositoryIntegrationTests
         var doc            = new TestEntity("", ImmutableList<IDelivery<IEvent>>.Empty);
         await collection.InsertOneAsync(doc);
         
-        var repository = new MongoRepository<TestEntity>(_mongoClient, _options, collectionName);
+        var repository = Create(collectionName);
         
         // Act
         var updated = doc with { Name = "TestEntity" };
@@ -141,7 +147,7 @@ public class MongoRepositoryIntegrationTests
         var doc            = new TestEntity("", ImmutableList<IDelivery<IEvent>>.Empty);
         await collection.InsertOneAsync(doc);
         
-        var repository = new MongoRepository<TestEntity>(_mongoClient, _options, collectionName);
+        var repository = Create(collectionName);
         
         // Act
         await repository.DeleteAsync(doc.Id);
@@ -162,7 +168,7 @@ public class MongoRepositoryIntegrationTests
         var doc            = new TestEntity("", ImmutableList<IDelivery<IEvent>>.Empty);
         await collection.InsertOneAsync(doc);
         
-        var repository = new MongoRepository<TestEntity>(_mongoClient, _options, collectionName);
+        var repository = Create(collectionName);
         
         // Act
         var @event = Delivery.Of(new TestEvent("Hello"));
@@ -183,7 +189,7 @@ public class MongoRepositoryIntegrationTests
         var doc            = new TestEntity("", ImmutableList<IDelivery<IEvent>>.Empty);
         await collection.InsertOneAsync(doc);
         
-        var repository = new MongoRepository<TestEntity>(_mongoClient, _options, collectionName);
+        var repository = Create(collectionName);
         
         // Act
         var @event = Delivery.Of(new TestEvent("Hello"));
