@@ -39,12 +39,5 @@ jobs:
         run: docker-compose -f Tests/docker-compose.yml up -d
       - name: Run tests
         run: dotnet test --logger "trx;LogFileName=results.trx"
-      - name: Publish tests results
-        uses: dorny/test-reporter@v1
-        if: success() || failure()    # run this step even if previous step failed
-        with:
-          name: Dotnet test report           # Name of the check run which will be created
-          path: "**/results.trx"    # Path to test results
-          reporter: dotnet-trx  
       
         
