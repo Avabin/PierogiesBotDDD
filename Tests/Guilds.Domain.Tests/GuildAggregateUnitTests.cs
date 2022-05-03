@@ -12,11 +12,13 @@ namespace Guilds.Domain.Tests;
 public class GuildAggregateUnitTests
 {
     private readonly IGuildsFactory _factory;
-    private GuildsAggregate Create() => new(_factory);
+    private readonly IGuildService _guildService;
+    private GuildsAggregate Create() => new(_factory, _guildService);
 
     public GuildAggregateUnitTests()
     {
         _factory = Substitute.For<IGuildsFactory>();
+        _guildService = Substitute.For<IGuildService>();
     }
 
     [Test]

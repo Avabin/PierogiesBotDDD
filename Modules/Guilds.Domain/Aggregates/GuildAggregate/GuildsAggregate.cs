@@ -9,15 +9,27 @@ namespace Guilds.Domain.Aggregates.GuildAggregate;
 internal class GuildsAggregate : IAggregateRoot, IGuildsAggregate
 {
     private readonly IGuildsFactory                          _guildsFactory;
+    private readonly IGuildService                           _guildService;
     private readonly ConcurrentDictionary<ulong, IGuildItem> _guilds = new();
 
-    public GuildsAggregate(IGuildsFactory guildsFactory)
+    public GuildsAggregate(IGuildsFactory guildsFactory, IGuildService guildService)
     {
-        _guildsFactory = guildsFactory;
+        _guildsFactory     = guildsFactory;
+        _guildService = guildService;
     }
 
-    public async Task<IGuildItem?> GetGuildAsync(ulong snowflakeId) =>
-        _guilds.TryGetValue(snowflakeId, out var guild) ? guild : null;
+    public async Task<IGuildItem?> GetGuildAsync(ulong snowflakeId)
+    {
+        if(_guilds.TryGetValue(snowflakeId, out var guild)) return guild;
+
+        if (await ExistsAsync(snowflakeId))
+            return await LoadOrCreateGuildAsync(snowflakeId);
+
+        return null;
+    }
+
+    public async Task<bool> ExistsAsync(ulong snowflakeId) => 
+        await _guildService.ExistsAsync(snowflakeId);
 
     public async Task<IGuildItem> LoadOrCreateGuildAsync(ulong snowflakeId)
     {

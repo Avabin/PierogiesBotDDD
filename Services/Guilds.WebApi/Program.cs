@@ -24,7 +24,7 @@ app.MapGet("/{id:long}", async ([FromServices] IMessageBroker broker, [FromRoute
 app.MapPost("/{id:long}",
             async ([FromBody] GuildDto guildDto, [FromServices] IMessageBroker broker, [FromRoute] ulong id) =>
             {
-                await broker.SendCommandAsync(new CreateGuild(guildDto.Name, id));
+                await broker.SendCommandAsync(new CreateGuildCommand(guildDto.Name, id));
 
                 return Results.Ok(id);
             });
@@ -33,7 +33,7 @@ app.MapPost("/{id:long}/name",
             async ([FromQuery] string name, [FromRoute] ulong id, [FromServices] IMessageBroker broker) =>
             {
                 var notificationsObservable = broker.GetNotificationsObservable<GuildNameChanged>(id.ToString());
-                await broker.SendToQueueAsync(new ChangeGuildName(name, id), IMessageBroker.RpcQueueName);
+                await broker.SendToQueueAsync(new ChangeGuildNameCommand(name, id), IMessageBroker.RpcQueueName);
                 await notificationsObservable.FirstAsync();
 
                 return Results.NoContent();
@@ -55,7 +55,7 @@ app.MapDelete("/{id:long}/channels/{channelId:long}",
               {
                   var notificationObservable =
                       broker.GetNotificationsObservable<UnsubscribedFromChannel>(id.ToString());
-                  await broker.SendToQueueAsync(new UnsubscribeChannel(channelId, id), IMessageBroker.RpcQueueName);
+                  await broker.SendToQueueAsync(new UnsubscribeChannelCommand(channelId, id), IMessageBroker.RpcQueueName);
                   await notificationObservable.FirstAsync();
 
                   return Results.NoContent();

@@ -22,7 +22,7 @@ public class DeleteGuildHandlerUnitTests
         // Arrange
         var sut     = Create();
         var guildId = 123123ul;
-        var command = new DeleteGuild(guildId);
+        var command = new DeleteGuildCommand(guildId);
         
         _guildsAggregate.DeleteAsync(Arg.Is(guildId)).Returns(Task.CompletedTask);
         

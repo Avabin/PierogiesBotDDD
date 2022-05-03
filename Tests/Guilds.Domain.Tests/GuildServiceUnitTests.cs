@@ -50,7 +50,7 @@ public class GuildServiceUnitTests
         _guildRepository.FindByIdAsync(Arg.Is(guildId)).Returns(expected);
 
         // Act
-        var actual = await guildService.LoadStateAsync(guildId);
+        var actual = await guildService.LoadOrCreateState(guildId);
 
         // Assert
         actual.Should().Be(expected);
@@ -69,7 +69,7 @@ public class GuildServiceUnitTests
         _guildRepository.InsertAsync(Arg.Is(GuildState.Empty)).Returns(expected);
 
         // Act
-        var actual = await guildService.LoadStateAsync(guildId);
+        var actual = await guildService.LoadOrCreateState(guildId);
 
         // Assert
         actual.Should().Be(expected);
@@ -91,7 +91,7 @@ public class GuildServiceUnitTests
         _guildRepository.InsertAsync(Arg.Is(GuildState.Empty with { SnowflakeId = guildId })).Returns(expected);
 
         // Act
-        var actual = await guildService.LoadStateAsync(guildId);
+        var actual = await guildService.LoadOrCreateState(guildId);
 
         // Assert
         actual.Should().Be(expected);

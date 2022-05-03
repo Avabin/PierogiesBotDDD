@@ -18,4 +18,5 @@ public interface IRepository<T> where T : Entity
 
     Task AddDomainEventAsync(IDelivery<IEvent>    @event, string id);
     Task RemoveDomainEventAsync(IDelivery<IEvent> @event, string id);
+    Task<bool> ExistsAsync<TField>(Expression<Func<T, TField>>         field,   TField  value);
 }

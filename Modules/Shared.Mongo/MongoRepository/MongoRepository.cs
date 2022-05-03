@@ -109,4 +109,13 @@ internal class MongoRepository<T> : IRepository<T> where T : Entity
         var newEntity = entity with { DomainEvents = domainEvents.ToImmutableList() };
         await UpdateAsync(newEntity);
     }
+
+    public async Task<bool> ExistsAsync<TField>(Expression<Func<T, TField>> field, TField value)
+    {
+        _logger.LogTrace("Checking if entity {EntityType} with field {Field} with value {Value} exists", typeof(T).Name,
+                         field, value);
+        var filter = Builders<T>.Filter.Eq(field, value);
+        
+        return await Collection.Find(filter).AnyAsync();
+    }
 }

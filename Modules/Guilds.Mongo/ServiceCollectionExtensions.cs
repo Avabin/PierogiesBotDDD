@@ -13,9 +13,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddGuildsMongo(this IServiceCollection services, IConfiguration config)
     {
         // Commands
-        BsonClassMap.RegisterClassMap<ChangeGuildName>();
-        BsonClassMap.RegisterClassMap<SubscribeChannel>();
-        BsonClassMap.RegisterClassMap<UnsubscribeChannel>();
+        BsonClassMap.RegisterClassMap<ChangeGuildNameCommand>();
+        BsonClassMap.RegisterClassMap<SubscribeChannelCommand>();
+        BsonClassMap.RegisterClassMap<UnsubscribeChannelCommand>();
 
         // Entities
         BsonClassMap.RegisterClassMap<GuildState>(cm =>

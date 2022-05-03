@@ -31,22 +31,26 @@ public class MongoRepositoryIntegrationTests
         new(_mongoClient, _options, collectionName, _logger);
 
     [OneTimeSetUp]
-    public void OneTimeSetUp()
+    public static void OneTimeSetUp()
     {
-        BsonClassMap.RegisterClassMap<Event>();
-        BsonClassMap.RegisterClassMap<TestEvent>();
-        BsonClassMap.RegisterClassMap<Delivery>(cm =>
+        if (!BsonClassMap.IsClassMapRegistered(typeof(Event))) BsonClassMap.RegisterClassMap<Event>();
+        if (!BsonClassMap.IsClassMapRegistered(typeof(TestEvent))) BsonClassMap.RegisterClassMap<TestEvent>();
+        // Delivery
+        if (!BsonClassMap.IsClassMapRegistered(typeof(Delivery))) BsonClassMap.RegisterClassMap<Delivery>(cm =>
         {
             cm.AutoMap();
-            cm.MapIdProperty(x => x.EventId).SetIdGenerator(StringObjectIdGenerator.Instance);
+            cm.MapIdProperty(x => x.Id).SetIdGenerator(new StringObjectIdGenerator());
         });
-        BsonClassMap.RegisterClassMap<Entity>(cm =>
+        // Entity
+        if (!BsonClassMap.IsClassMapRegistered(typeof(TestEntity))) BsonClassMap.RegisterClassMap<Entity>(cm =>
         {
+            cm.AutoMap();
             cm.MapIdProperty(gs => gs.Id)
               .SetIdGenerator(new StringObjectIdGenerator());
             cm.MapProperty(gs => gs.DomainEvents).SetSerializer(new ImmutableListSerializer<IDelivery<IEvent>>());
         });
-        BsonClassMap.RegisterClassMap<GuildState>(cm =>
+        // GuildState
+        if (!BsonClassMap.IsClassMapRegistered(typeof(GuildState))) BsonClassMap.RegisterClassMap<GuildState>(cm =>
         {
             cm.AutoMap();
             cm.MapProperty(gs => gs.SubscribedChannels).SetSerializer(new ImmutableListSerializer<SubscribedChannel>());

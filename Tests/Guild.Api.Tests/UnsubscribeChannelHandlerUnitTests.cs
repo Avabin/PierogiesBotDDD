@@ -13,10 +13,10 @@ namespace Guild.Api.Tests;
 [Parallelizable(ParallelScope.All)]
 [TestFixture]
 [Category("Unit")]
-public class SubscribeChannelHandlerUnitTests
+public class UnsubscribeChannelHandlerUnitTests
 {
     private readonly IGuildsAggregate        _guildsAggregate = Substitute.For<IGuildsAggregate>();
-    private          SubscribeChannelHandler Create() => new(_guildsAggregate);
+    private          UnsubscribeChannelHandler Create() => new(_guildsAggregate);
 
 
     [Test]
@@ -26,7 +26,7 @@ public class SubscribeChannelHandlerUnitTests
         var sut       = Create();
         var channelId = 123123123ul;
         var guildId   = 123123123ul;
-        var command   = new SubscribeChannelCommand("", channelId, guildId);
+        var command   = new UnsubscribeChannelCommand(channelId, guildId);
         var guild     = Substitute.For<IGuildItem>();
         var guildState = new GuildState("Guild", guildId);
         var stateObservable = Observable.Return(guildState);
@@ -40,7 +40,7 @@ public class SubscribeChannelHandlerUnitTests
         await sut.HandleAsync(command);
         
         // Assert
-        await guild.Received().SubscribeChannelAsync(Arg.Is(""), Arg.Is(channelId));
+        await guild.Received().UnsubscribeChannelAsync(Arg.Is(channelId));
         await guild.AddDomainEventAsync(Arg.Is(delivery));
     }
 }

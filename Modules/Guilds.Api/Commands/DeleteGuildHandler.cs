@@ -4,7 +4,7 @@ using Shared.Guilds.Commands;
 
 namespace Guilds.Api.Commands;
 
-public class DeleteGuildHandler : CommandHandler<DeleteGuild>
+public class DeleteGuildHandler : CommandHandler<DeleteGuildCommand>
 {
     private readonly IGuildsAggregate _guildsAggregate;
 
@@ -12,7 +12,7 @@ public class DeleteGuildHandler : CommandHandler<DeleteGuild>
     {
         _guildsAggregate = guildsAggregate;
     }
-    public override async Task HandleAsync(DeleteGuild command)
+    public override async Task HandleAsync(DeleteGuildCommand command)
     {
         await _guildsAggregate.DeleteAsync(command.GuildId);
     }

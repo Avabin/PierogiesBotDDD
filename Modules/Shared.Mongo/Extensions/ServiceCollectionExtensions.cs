@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
         BsonClassMap.RegisterClassMap<Delivery>(cm =>
         {
             cm.AutoMap();
-            cm.MapIdProperty(x => x.EventId).SetIdGenerator(StringObjectIdGenerator.Instance);
+            cm.MapIdProperty(x => x.Id).SetIdGenerator(StringObjectIdGenerator.Instance);
         });
         BsonClassMap.RegisterClassMap<Entity>(cm =>
         {

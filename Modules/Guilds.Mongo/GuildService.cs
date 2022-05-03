@@ -25,7 +25,7 @@ internal class GuildService : IGuildService
         _eventStore    = eventStore;
     }
 
-    public async Task<GuildState> LoadStateAsync(string id)
+    public async Task<GuildState> LoadOrCreateState(string id)
     {
         var existing = await _repository.FindByIdAsync(id);
         if (existing != null) return existing;
@@ -33,7 +33,7 @@ internal class GuildService : IGuildService
         return await SaveAndNotifyAsync(GuildState.Empty);
     }
 
-    public async Task<GuildState> LoadStateAsync(ulong snowflakeId)
+    public async Task<GuildState> LoadOrCreateState(ulong snowflakeId)
     {
         var existing = await _repository.FindOneByFieldAsync(x => x.SnowflakeId, snowflakeId);
         if (existing != null) return existing;
@@ -80,7 +80,8 @@ internal class GuildService : IGuildService
     public async Task<GuildState> AddDomainEventAsync(IDelivery<IEvent>       delivery,
                                                       IObservable<GuildState> stateObservable)
     {
-        await _eventStore.AddAsync(delivery);
+        
+        await _eventStore.AddAsync((Delivery) delivery);
         return await Apply(old => old with { DomainEvents = old.DomainEvents.Add(delivery) }, stateObservable);
     }
 
@@ -97,6 +98,9 @@ internal class GuildService : IGuildService
         await _messageBroker.NotifyAsync(new GuildDeleted(state.SnowflakeId));
         return GuildState.Empty;
     }
+
+    public async Task<bool> ExistsAsync(ulong snowflakeId) => 
+        await _repository.ExistsAsync(x => x.SnowflakeId, snowflakeId);
 
     private async Task<GuildState> Apply(Func<GuildState, GuildState> transform, IObservable<GuildState> state)
     {

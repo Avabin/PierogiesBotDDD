@@ -5,7 +5,7 @@ using Shared.Guilds.Commands;
 
 namespace Guilds.Api.Commands;
 
-public class SubscribeChannelHandler : CommandHandler<SubscribeChannel>
+public class SubscribeChannelHandler : CommandHandler<SubscribeChannelCommand>
 {
     private readonly IGuildsAggregate _guildsAggregate;
 
@@ -14,7 +14,7 @@ public class SubscribeChannelHandler : CommandHandler<SubscribeChannel>
         _guildsAggregate = guildsAggregate;
     }
 
-    public override async Task HandleAsync(SubscribeChannel command)
+    public override async Task HandleAsync(SubscribeChannelCommand command)
     {
         var guild = await _guildsAggregate.GetGuildAsync(command.GuildId);
 

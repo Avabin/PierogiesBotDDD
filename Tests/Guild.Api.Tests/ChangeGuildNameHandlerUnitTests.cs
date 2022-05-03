@@ -45,7 +45,7 @@ public class ChangeGuildNameHandlerUnitTests
         _guildsFactory.Create().Returns(guild);
         _guildsAggregate.GetGuildAsync(Arg.Is(guildId)).Returns(guild);
 
-        _service.LoadStateAsync(Arg.Is(guildId)).Returns(guildState);
+        _service.LoadOrCreateState(Arg.Is(guildId)).Returns(guildState);
         _service.ChangeNameAsync(Arg.Is(expected), Arg.Any<IObservable<GuildState>>())
                 .Returns(guildState with { Name = expected });
         _service.AddDomainEventAsync(Arg.Any<IDelivery<IEvent>>(), Arg.Any<IObservable<GuildState>>())
@@ -60,7 +60,7 @@ public class ChangeGuildNameHandlerUnitTests
                  });
         await guild.LoadOrCreateStateAsync(guildId);
         var handler = new ChangeGuildNameHandler(_guildsAggregate);
-        var command = new ChangeGuildName(expected, guildId);
+        var command = new ChangeGuildNameCommand(expected, guildId);
 
         handler.Context = Delivery.Of(command);
         // Act
@@ -69,6 +69,6 @@ public class ChangeGuildNameHandlerUnitTests
 
         // Assert
         actual.Name.Should().Be(expected);
-        actual.DomainEvents.Should().Contain(x => (x.Data as ChangeGuildName) == command);
+        actual.DomainEvents.Should().Contain(x => (x.Data as ChangeGuildNameCommand) == command);
     }
 }

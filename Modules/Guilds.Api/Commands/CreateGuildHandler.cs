@@ -4,7 +4,7 @@ using Shared.Guilds.Commands;
 
 namespace Guilds.Api.Commands;
 
-public class CreateGuildHandler : CommandHandler<CreateGuild>
+public class CreateGuildHandler : CommandHandler<CreateGuildCommand>
 {
     private readonly IGuildsAggregate _guildsAggregate;
 
@@ -13,7 +13,7 @@ public class CreateGuildHandler : CommandHandler<CreateGuild>
         _guildsAggregate = guildsAggregate;
     }
 
-    public override async Task HandleAsync(CreateGuild command)
+    public override async Task HandleAsync(CreateGuildCommand command)
     {
         var guild = await _guildsAggregate.GetGuildAsync(command.SnowflakeId);
 

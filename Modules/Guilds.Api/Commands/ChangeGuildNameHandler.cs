@@ -5,7 +5,7 @@ using Shared.Guilds.Commands;
 
 namespace Guilds.Api.Commands;
 
-public class ChangeGuildNameHandler : CommandHandler<ChangeGuildName>
+public class ChangeGuildNameHandler : CommandHandler<ChangeGuildNameCommand>
 {
     private readonly IGuildsAggregate _guildsAggregate;
 
@@ -14,7 +14,7 @@ public class ChangeGuildNameHandler : CommandHandler<ChangeGuildName>
         _guildsAggregate = guildsAggregate;
     }
 
-    public override async Task HandleAsync(ChangeGuildName command)
+    public override async Task HandleAsync(ChangeGuildNameCommand command)
     {
         var guild = await _guildsAggregate.GetGuildAsync(command.GuildId);
 

@@ -5,7 +5,7 @@ namespace Shared.Mongo.MongoRepository;
 
 public interface IEventStore
 {
-    IQueryable<IDelivery<IEvent>> Query();
+    IQueryable<Delivery> Query();
 
-    Task AddAsync(IDelivery<IEvent> delivery);
+    Task AddAsync(Delivery delivery);
 }

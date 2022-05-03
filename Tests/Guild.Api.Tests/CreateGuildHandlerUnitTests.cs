@@ -22,7 +22,7 @@ public class CreateGuildHandlerUnitTests
     {
         // Arrange
         var sut     = Create();
-        var command = new CreateGuild("Test Guild", 123123ul);
+        var command = new CreateGuildCommand("Test Guild", 123123ul);
         var guild   = Substitute.For<IGuildItem>();
 
         _guildsAggregate.GetGuildAsync(Arg.Any<ulong>())!.Returns(Task.FromResult<IGuildItem>(null!));
@@ -44,7 +44,7 @@ public class CreateGuildHandlerUnitTests
     {
         // Arrange
         var sut     = Create();
-        var command = new CreateGuild("Test Guild", 123123ul);
+        var command = new CreateGuildCommand("Test Guild", 123123ul);
         var guild   = Substitute.For<IGuildItem>();
 
         _guildsAggregate.GetGuildAsync(Arg.Any<ulong>())!.Returns(Task.FromResult(guild));

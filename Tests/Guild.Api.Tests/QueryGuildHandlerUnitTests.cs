@@ -18,7 +18,7 @@ public class QueryGuildHandlerUnitTests
 {
     private readonly IGuildsFactory  _guildsFactory;
     private readonly IGuildService   _guildService;
-    private          GuildsAggregate GetGuilds() => new(_guildsFactory);
+    private          GuildsAggregate GetGuilds() => new(_guildsFactory, _guildService);
 
     private GuildItem GetGuild() => new(_guildService);
 
@@ -43,7 +43,7 @@ public class QueryGuildHandlerUnitTests
                                         ImmutableList<IDelivery<IEvent>>.Empty);
 
         _guildsFactory.Create().Returns(guild);
-        _guildService.LoadStateAsync(Arg.Is(guildId)).Returns(guildState);
+        _guildService.LoadOrCreateState(Arg.Is(guildId)).Returns(guildState);
 
         // Act
         var result = await handler.HandleAsync(query);

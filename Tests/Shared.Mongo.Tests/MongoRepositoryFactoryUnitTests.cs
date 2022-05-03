@@ -12,24 +12,22 @@ using Shared.Mongo.MongoRepository;
 
 namespace Shared.Mongo.Tests;
 
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
+[Parallelizable(ParallelScope.All)]
 [TestFixture]
 [Category("Unit")]
 public class MongoRepositoryFactoryUnitTests
 {
-    private IServiceProvider        _serviceProvider;
-    private IMongoClient            _client;
-    private IOptions<MongoSettings> _settings;
+    private readonly IServiceProvider        _serviceProvider;
 
-
-    [SetUp]
-    public void SetUp()
+    public MongoRepositoryFactoryUnitTests()
     {
         _serviceProvider = Substitute.For<IServiceProvider>();
-        _client          = Substitute.For<IMongoClient>();
-        _settings        = Substitute.For<IOptions<MongoSettings>>();
+        var client  = Substitute.For<IMongoClient>();
+        var          settings = Substitute.For<IOptions<MongoSettings>>();
 
-        _serviceProvider.GetService<IMongoClient>().Returns(_client);
-        _serviceProvider.GetService<IOptions<MongoSettings>>().Returns(_settings);
+        _serviceProvider.GetService<IMongoClient>().Returns(client);
+        _serviceProvider.GetService<IOptions<MongoSettings>>().Returns(settings);
         _serviceProvider.GetService<ILogger<MongoRepository<Entity>>>()
                         .Returns(NullLogger<MongoRepository<Entity>>.Instance);
     }
