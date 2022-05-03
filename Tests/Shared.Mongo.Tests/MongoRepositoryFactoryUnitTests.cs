@@ -30,8 +30,8 @@ public class MongoRepositoryFactoryUnitTests
 
         _serviceProvider.GetService<IMongoClient>().Returns(_client);
         _serviceProvider.GetService<IOptions<MongoSettings>>().Returns(_settings);
-        _serviceProvider.GetService<ILogger<MongoRepository<TestEntity>>>()
-            .Returns(NullLogger<MongoRepository<TestEntity>>.Instance);
+        _serviceProvider.GetService<ILogger<MongoRepository<Entity>>>()
+            .Returns(NullLogger<MongoRepository<Entity>>.Instance);
     }
 
     [Test]
