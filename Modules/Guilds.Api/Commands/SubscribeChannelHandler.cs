@@ -14,7 +14,7 @@ public class SubscribeChannelHandler : CommandHandler<SubscribeChannelCommand>
         _guildsAggregate = guildsAggregate;
     }
 
-    public override async Task HandleAsync(SubscribeChannelCommand command)
+    protected override async Task HandleAsync(SubscribeChannelCommand command)
     {
         var guild = await _guildsAggregate.GetGuildAsync(command.GuildId);
 

@@ -12,7 +12,8 @@ public class DeleteGuildHandler : CommandHandler<DeleteGuildCommand>
     {
         _guildsAggregate = guildsAggregate;
     }
-    public override async Task HandleAsync(DeleteGuildCommand command)
+
+    protected override async Task HandleAsync(DeleteGuildCommand command)
     {
         await _guildsAggregate.DeleteAsync(command.GuildId);
     }

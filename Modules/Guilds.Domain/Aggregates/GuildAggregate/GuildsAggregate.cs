@@ -20,8 +20,10 @@ internal class GuildsAggregate : IAggregateRoot, IGuildsAggregate
 
     public async Task<IGuildItem?> GetGuildAsync(ulong snowflakeId)
     {
+        // Get cached
         if(_guilds.TryGetValue(snowflakeId, out var guild)) return guild;
 
+        // Load from persistence layer or create new and save
         if (await ExistsAsync(snowflakeId))
             return await LoadOrCreateGuildAsync(snowflakeId);
 
@@ -42,8 +44,10 @@ internal class GuildsAggregate : IAggregateRoot, IGuildsAggregate
     }
 
     public async Task DeleteAsync(ulong snowflakeId)
-    {
-        _guilds.TryRemove(snowflakeId, out var guild);
+    { 
+        var guild = await GetGuildAsync(snowflakeId);
+        if(guild is null) _guilds.TryRemove(snowflakeId, out guild);
+        
         if (guild is null)
             return;
         

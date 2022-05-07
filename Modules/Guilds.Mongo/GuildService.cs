@@ -25,7 +25,7 @@ internal class GuildService : IGuildService
         _eventStore    = eventStore;
     }
 
-    public async Task<GuildState> LoadOrCreateState(string id)
+    public async Task<GuildState> LoadOrCreateStateAsync(string id)
     {
         var existing = await _repository.FindByIdAsync(id);
         if (existing != null) return existing;
@@ -33,7 +33,7 @@ internal class GuildService : IGuildService
         return await SaveAndNotifyAsync(GuildState.Empty);
     }
 
-    public async Task<GuildState> LoadOrCreateState(ulong snowflakeId)
+    public async Task<GuildState> LoadOrCreateStateAsync(ulong snowflakeId)
     {
         var existing = await _repository.FindOneByFieldAsync(x => x.SnowflakeId, snowflakeId);
         if (existing != null) return existing;
@@ -92,7 +92,7 @@ internal class GuildService : IGuildService
     public async Task<GuildState> DeleteStateAsync(IObservable<GuildState> stateObservable)
     {
         var state = await stateObservable.FirstAsync();
-        if (state.Id is "") return state with {}; // Not persisted yet
+        if (!await ExistsAsync(state.SnowflakeId)) return state with {}; // Not persisted yet
         var id = state.Id;
         await _repository.DeleteAsync(id);
         await _messageBroker.NotifyAsync(new GuildDeleted(state.SnowflakeId));

@@ -8,9 +8,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Modules\Guilds.Infrastructure\Guilds.Infrastructure.csproj"/>
-        <ProjectReference Include="..\..\Modules\Shared.Core\Shared.Core.csproj"/>
-        <ProjectReference Include="..\..\Modules\Shared.Guilds\Shared.Guilds.csproj"/>
+        <ProjectReference Include="..\..\Modules\Guilds.Infrastructure\Guilds.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\Modules\Shared.Core\Shared.Core.csproj" />
+        <ProjectReference Include="..\..\Modules\Shared.Guilds\Shared.Guilds.csproj" />
     </ItemGroup>
 
 </Project>

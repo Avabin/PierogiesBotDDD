@@ -1,5 +1,4 @@
-﻿using Shared.Core.Events;
-using Shared.Core.MessageBroker;
+﻿using Shared.Core.MessageBroker;
 
 namespace Shared.Mongo.MongoRepository;
 

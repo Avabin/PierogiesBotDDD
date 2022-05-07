@@ -21,14 +21,14 @@ public record GuildItem : IGuildItem
     public async Task LoadOrCreateStateAsync(string id)
     {
         if (await HasStateAsync()) return;
-        var newState = await _guildService.LoadOrCreateState(id);
+        var newState = await _guildService.LoadOrCreateStateAsync(id);
         State.OnNext(newState);
     }
 
     public async Task LoadOrCreateStateAsync(ulong snowflakeId)
     {
         if (await HasStateAsync()) return;
-        var newState = await _guildService.LoadOrCreateState(snowflakeId);
+        var newState = await _guildService.LoadOrCreateStateAsync(snowflakeId);
         State.OnNext(newState);
     }
 

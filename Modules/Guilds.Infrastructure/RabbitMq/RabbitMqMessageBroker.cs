@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using Shared.Core.Commands;
 using Shared.Core.Events;
 using Shared.Core.MessageBroker;
 using Shared.Core.Notifications;
@@ -201,6 +202,9 @@ public class RabbitMqMessageBroker : IMessageBroker, IDisposable
 
         return channelObservable.Timeout(Timeout);
     }
+
+    public async ValueTask SendCommandAsync<T>(T command, string? rpcQueueName = null) where T : ICommand =>
+        await SendToQueueAsync(command, rpcQueueName ?? IMessageBroker.RpcQueueName);
 
     protected virtual void Dispose(bool disposing)
     {

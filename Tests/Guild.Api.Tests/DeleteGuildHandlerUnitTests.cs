@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Guilds.Api.Commands;
 using Guilds.Domain.Aggregates.GuildAggregate;
 using NSubstitute;

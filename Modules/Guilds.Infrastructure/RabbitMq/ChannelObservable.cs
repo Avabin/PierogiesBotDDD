@@ -1,5 +1,4 @@
 ﻿using System.Reactive.Linq;
-using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Shared.Core.Events;
@@ -53,7 +52,7 @@ public abstract class ChannelObservable : EventingBasicConsumer, IDisposable
     {
         if (disposing)
         {
-            base.Model.Dispose();
+            Model.Dispose();
         }
     }
 

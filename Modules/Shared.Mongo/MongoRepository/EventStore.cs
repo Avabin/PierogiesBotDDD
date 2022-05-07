@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using Shared.Core.Events;
 using Shared.Core.MessageBroker;
 
 namespace Shared.Mongo.MongoRepository;

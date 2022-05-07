@@ -52,6 +52,24 @@ public class GuildAggregateUnitTests
     }
     
     [Test]
+    public async Task When_GetGuildAsync_GuildNotLoaded_GuildLoadedAndReturned()
+    {
+        // Arrange
+        var guildId  = 123123123ul;
+        var sut      = Create();
+        var expected = Substitute.For<IGuildItem>();
+
+        _guildService.ExistsAsync(Arg.Is(guildId)).Returns(true);
+        _factory.Create().Returns(expected);
+        // Act
+        var actual = await sut.GetGuildAsync(guildId);
+
+        // Assert
+        actual.Should().Be(expected);
+        await expected.Received().LoadOrCreateStateAsync(Arg.Is(guildId));
+    }
+    
+    [Test]
     public async Task When_LoadOrCreateAsync_GuildLoaded_And_GuildReturned()
     {
         // Arrange
@@ -66,5 +84,37 @@ public class GuildAggregateUnitTests
 
         // Assert
         actual.Should().Be(expected);
+    }
+    
+    [Test]
+    public async Task When_DeleteStateAsync_GuildDeleted()
+    {
+        // Arrange
+        var guildId  = 123123123ul;
+        var sut      = Create();
+        var guild = Substitute.For<IGuildItem>();
+
+        sut.AddGuild(guildId, guild);
+        // Act
+        await sut.DeleteAsync(guildId);
+
+        // Assert
+        await guild.Received().DeleteStateAsync();
+    }
+    
+    [Test]
+    public async Task When_HandleAsync_GuildNotExists_NothingHappens()
+    {
+        // Arrange
+        var guildId = 123123123ul;
+        var sut     = Create();
+        var guild   = Substitute.For<IGuildItem>();
+
+        _guildService.ExistsAsync(Arg.Any<ulong>()).Returns(false);
+        // Act
+        await sut.DeleteAsync(guildId);
+
+        // Assert
+        await guild.DidNotReceive().DeleteStateAsync();
     }
 }

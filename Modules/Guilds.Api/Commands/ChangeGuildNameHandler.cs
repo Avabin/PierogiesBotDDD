@@ -14,7 +14,7 @@ public class ChangeGuildNameHandler : CommandHandler<ChangeGuildNameCommand>
         _guildsAggregate = guildsAggregate;
     }
 
-    public override async Task HandleAsync(ChangeGuildNameCommand command)
+    protected override async Task HandleAsync(ChangeGuildNameCommand command)
     {
         var guild = await _guildsAggregate.GetGuildAsync(command.GuildId);
 

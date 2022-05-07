@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using Shared.Core.Events;
+using Shared.Core.MessageBroker;
 using Shared.Core.Queries;
 
 namespace Guilds.Infrastructure.Tests;
@@ -26,13 +27,14 @@ public class RabbitMqMessageBrokerIntegrationTests
         Port       = 5672,
         ClientName = "rpc_test"
     };
+    private static RabbitMqMessageBroker Create() => new(new OptionsWrapper<RabbitMqSettings>(RabbitMqSettings),
+                                                         NullLoggerFactory.Instance);
 
     [Test]
     public async Task When_MessageIsSentToQueue_ObservableIsNotified()
     {
         // Arrange
-        var sut = new RabbitMqMessageBroker(new OptionsWrapper<RabbitMqSettings>(RabbitMqSettings),
-                                            NullLoggerFactory.Instance);
+        var sut = Create();
 
         // Act
         var       resultObservable = sut.GetObservableForQueue<QueryInt>("test_queue");
@@ -48,6 +50,26 @@ public class RabbitMqMessageBrokerIntegrationTests
         // Assert
         actual.Should().Be(expected);
     }
+    
+    [Test]
+    public async Task When_CommandIsSentToQueue_ItGoesToRpcQueue()
+    {
+        // Arrange
+        var sut = Create();
+        var rpcQueueName = "test_rpc_queue_" + Guid.NewGuid();
+
+        // Act
+        var       resultObservable = sut.GetObservableForQueue<TestCommand>(rpcQueueName);
+        var       tcs              = new TaskCompletionSource<TestCommand?>();
+        using var sub              = resultObservable.Subscribe(x => tcs.SetResult(x.Data as TestCommand));
+        var       expected         = new TestCommand();
+        await sut.SendCommandAsync(expected, rpcQueueName);
+
+        var actual = await tcs.Task;
+
+        // Assert
+        actual.Should().Be(expected);
+    }
 
     [TestCase("*")]
     [TestCase("logs.*")]
@@ -56,8 +78,7 @@ public class RabbitMqMessageBrokerIntegrationTests
     {
         // Arrange
 
-        var sut = new RabbitMqMessageBroker(new OptionsWrapper<RabbitMqSettings>(RabbitMqSettings),
-                                            NullLoggerFactory.Instance);
+        var sut = Create();
 
         // Act
         var       resultObservable = sut.GetObservableForTopic<QueryInt>("queries", routingKey);
@@ -78,8 +99,7 @@ public class RabbitMqMessageBrokerIntegrationTests
     {
         // Arrange
         // Create RPC server instance
-        var server = new RabbitMqMessageBroker(new OptionsWrapper<RabbitMqSettings>(RabbitMqSettings),
-                                               NullLoggerFactory.Instance);
+        var server = Create();
 
         // Create RPC client instance
         var client =
@@ -89,7 +109,7 @@ public class RabbitMqMessageBrokerIntegrationTests
 
 
         // Server observe for RPC requests
-        var queryObservable = server.GetObservableForQueue<QueryInt>("rpc_queue");
+        var queryObservable = server.GetObservableForQueue<QueryInt>(IMessageBroker.RpcQueueName);
 
         var expected      = new QueryIntResult(42);
         var callbackQuery = client.RpcCallbackQueueName;
@@ -111,8 +131,7 @@ public class RabbitMqMessageBrokerIntegrationTests
     public async Task When_NotificationIsSent_ThenClientsReceive()
     {
         // Arrange
-        var notifier = new RabbitMqMessageBroker(new OptionsWrapper<RabbitMqSettings>(RabbitMqSettings),
-                                                 NullLoggerFactory.Instance);
+        var notifier = Create();
         var client1 =
             new
                 RabbitMqMessageBroker(new OptionsWrapper<RabbitMqSettings>(RabbitMqSettings with { ClientName = "rpc_test3" }),
@@ -151,8 +170,7 @@ public class RabbitMqMessageBrokerIntegrationTests
     public async Task When_NotificationIsSentWithRoutingKey_ThenOnlyClientsWithCorrectKeysReceive()
     {
         // Arrange
-        var notifier = new RabbitMqMessageBroker(new OptionsWrapper<RabbitMqSettings>(RabbitMqSettings),
-                                                 NullLoggerFactory.Instance);
+        var notifier = Create();
         var client1 =
             new
                 RabbitMqMessageBroker(new OptionsWrapper<RabbitMqSettings>(RabbitMqSettings with { ClientName = "rpc_test3" }),

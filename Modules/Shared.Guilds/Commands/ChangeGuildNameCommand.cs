@@ -1,3 +1,5 @@
-﻿namespace Shared.Guilds.Commands;
+﻿using Shared.Core.Commands;
 
-public record ChangeGuildNameCommand(string Name, ulong GuildId) : GuildCommandBase(GuildId);
+namespace Shared.Guilds.Commands;
+
+public record ChangeGuildNameCommand(string Name, ulong GuildId) : Command;

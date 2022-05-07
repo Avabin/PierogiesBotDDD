@@ -5,8 +5,8 @@ namespace Guilds.Domain.Aggregates.GuildAggregate;
 
 public interface IGuildService
 {
-    Task<GuildState> LoadOrCreateState(string                    id);
-    Task<GuildState> LoadOrCreateState(ulong                     snowflakeId);
+    Task<GuildState> LoadOrCreateStateAsync(string                    id);
+    Task<GuildState> LoadOrCreateStateAsync(ulong                     snowflakeId);
     Task<GuildState> ChangeNameAsync(string                   name,      IObservable<GuildState> state);
     Task<GuildState> SubscribeChannelAsync(string             name,      ulong                   channelId, IObservable<GuildState> state);
     Task<GuildState> UnsubscribeChannelAsync(ulong            channelId, IObservable<GuildState> state);

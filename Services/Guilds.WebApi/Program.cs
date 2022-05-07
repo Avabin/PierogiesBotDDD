@@ -1,6 +1,6 @@
 using System.Reactive.Linq;
+using System.Text.Json;
 using Guilds.Infrastructure;
-using Guilds.WebApi;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Core.MessageBroker;
 using Shared.Guilds;
@@ -22,9 +22,11 @@ app.MapGet("/{id:long}", async ([FromServices] IMessageBroker broker, [FromRoute
 });
 
 app.MapPost("/{id:long}",
-            async ([FromBody] GuildDto guildDto, [FromServices] IMessageBroker broker, [FromRoute] ulong id) =>
+            async ([FromBody] JsonElement guildDto, [FromServices] IMessageBroker broker, [FromRoute] ulong id) =>
             {
-                await broker.SendCommandAsync(new CreateGuildCommand(guildDto.Name, id));
+                var name = guildDto.GetProperty("name").GetString();
+                if (name is null)   return Results.BadRequest(new {property = "name", error ="name is required"});
+                await broker.SendCommandAsync(new CreateGuildCommand(name, id));
 
                 return Results.Ok(id);
             });

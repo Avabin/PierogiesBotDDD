@@ -5,12 +5,8 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Driver;
-using NSubstitute;
 using NUnit.Framework;
-using Shared.Core.Events;
 using Shared.Core.MessageBroker;
 using Shared.Mongo.MongoRepository;
 
@@ -51,7 +47,7 @@ public class EventStoreUnitTests
     }
 
     [Test]
-    public async Task When_Query_ReturnsCollectionAsQuery()
+    public void When_Query_ReturnsCollectionAsQuery()
     {
         // Arrange
         var sut      = Create();

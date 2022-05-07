@@ -50,14 +50,14 @@ public static class ServiceCollectionExtensions
         var commandHandlers = assembly.GetExportedTypes().Where(t => t.IsClass && t.GetInterfaces()
                                                                         .Any(i => i.IsGenericType &&
                                                                                  i.GetGenericTypeDefinition() ==
-                                                                                 typeof(ICommandHandler<>)))
+                                                                                 typeof(ICommandHandler)))
                                       .ToList();
 
         foreach (var commandHandler in commandHandlers)
         {
             var interfaceType = commandHandler.GetInterfaces()
                                               .First(i => i.IsGenericType && i.GetGenericTypeDefinition() ==
-                                                          typeof(ICommandHandler<>));
+                                                          typeof(ICommandHandler));
             services.AddTransient(interfaceType, commandHandler);
         }
 
@@ -69,14 +69,14 @@ public static class ServiceCollectionExtensions
         var queryHandlers = assembly.GetExportedTypes().Where(t => t.IsClass && t.GetInterfaces()
                                                                       .Any(i => i.IsGenericType &&
                                                                                i.GetGenericTypeDefinition() ==
-                                                                               typeof(IQueryHandler<>)))
+                                                                               typeof(IQueryHandler)))
                                     .ToList();
 
         foreach (var queryHandler in queryHandlers)
         {
             var interfaceType = queryHandler.GetInterfaces()
                                             .First(i => i.IsGenericType &&
-                                                        i.GetGenericTypeDefinition() == typeof(IQueryHandler<>));
+                                                        i.GetGenericTypeDefinition() == typeof(IQueryHandler));
             services.AddTransient(interfaceType, queryHandler);
         }
 

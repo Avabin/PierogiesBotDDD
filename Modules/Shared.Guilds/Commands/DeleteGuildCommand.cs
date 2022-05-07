@@ -1,5 +1,7 @@
-﻿namespace Shared.Guilds.Commands;
+﻿using Shared.Core.Commands;
 
-public record DeleteGuildCommand(ulong GuildId) : GuildCommandBase(GuildId)
+namespace Shared.Guilds.Commands;
+
+public record DeleteGuildCommand(ulong GuildId) : Command
 {
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Guilds.Domain.Aggregates.GuildAggregate;
 using Guilds.Mongo;
 using NSubstitute;
 using NUnit.Framework;
+using Shared.Core.Commands;
 using Shared.Core.Events;
 using Shared.Core.MessageBroker;
 using Shared.Core.Persistence;
@@ -50,11 +52,30 @@ public class GuildServiceUnitTests
         _guildRepository.FindByIdAsync(Arg.Is(guildId)).Returns(expected);
 
         // Act
-        var actual = await guildService.LoadOrCreateState(guildId);
+        var actual = await guildService.LoadOrCreateStateAsync(guildId);
 
         // Assert
         actual.Should().Be(expected);
         await _guildRepository.Received().FindByIdAsync(Arg.Is(guildId));
+    }
+    
+    [Test]
+    public async Task When_LoadStateSnowflakeId_ReturnsState()
+    {
+        // Arrange
+        var guildService = Create();
+        var guildId      = 123123123ul;
+        var expected = new GuildState("Test Guild", guildId, ImmutableList<SubscribedChannel>.Empty,
+                                      ImmutableList<IDelivery<IEvent>>.Empty, "123123");
+
+        _guildRepository.FindOneByFieldAsync(Arg.Any<Expression<Func<GuildState, ulong>>>(),Arg.Is(guildId)).Returns(expected);
+
+        // Act
+        var actual = await guildService.LoadOrCreateStateAsync(guildId);
+
+        // Assert
+        actual.Should().Be(expected);
+        await _guildRepository.Received().FindOneByFieldAsync(Arg.Any<Expression<Func<GuildState, ulong>>>(),Arg.Is(guildId));
     }
 
     [Test]
@@ -69,7 +90,7 @@ public class GuildServiceUnitTests
         _guildRepository.InsertAsync(Arg.Is(GuildState.Empty)).Returns(expected);
 
         // Act
-        var actual = await guildService.LoadOrCreateState(guildId);
+        var actual = await guildService.LoadOrCreateStateAsync(guildId);
 
         // Assert
         actual.Should().Be(expected);
@@ -91,7 +112,7 @@ public class GuildServiceUnitTests
         _guildRepository.InsertAsync(Arg.Is(GuildState.Empty with { SnowflakeId = guildId })).Returns(expected);
 
         // Act
-        var actual = await guildService.LoadOrCreateState(guildId);
+        var actual = await guildService.LoadOrCreateStateAsync(guildId);
 
         // Assert
         actual.Should().Be(expected);
@@ -167,9 +188,9 @@ public class GuildServiceUnitTests
         var guildStateId      = "123";
         var channelName       = "123123";
         var channelId         = 123123123ul;
-        var guildId           = 123123123ul;
+        var guildId           = 123123124ul;
         var subscribedChannel = new SubscribedChannel(channelName, channelId);
-        var initialState = new GuildState("Test Guild", 123123123ul,
+        var initialState = new GuildState("Test Guild", guildId,
                                           new List<SubscribedChannel> { subscribedChannel }.ToImmutableList(),
                                           ImmutableList<IDelivery<IEvent>>.Empty, guildStateId);
         var expected        = initialState with { SubscribedChannels = ImmutableList<SubscribedChannel>.Empty };
@@ -186,4 +207,116 @@ public class GuildServiceUnitTests
                                                     Arg.Is(guildId.ToString()));
         await _guildRepository.Received().UpdateAsync(Arg.Is<GuildState>(state => state.SubscribedChannels.IsEmpty));
     }
+
+    [Test]
+    public async Task When_AddDomainEvent_EventIsAdded()
+    {
+        // Arrange
+        var guildService = Create();
+        var guildStateId = "123";
+        var guildId      = 123123123ul;
+        var command      = new Command();
+        var delivery     = Delivery.Of(command);
+        var initialState = new GuildState("Test Guild", guildId, ImmutableList<SubscribedChannel>.Empty,
+                                          ImmutableList<IDelivery<IEvent>>.Empty, guildStateId);
+        var expected        = initialState with { DomainEvents = initialState.DomainEvents.Add(delivery)};
+        var stateObservable = Observable.Return(initialState);
+
+        _guildRepository.UpdateAsync(Arg.Is(expected)).Returns(Task.CompletedTask);
+
+        // Act
+        var actual = await guildService.AddDomainEventAsync(delivery, stateObservable);
+
+        // Assert
+        actual.DomainEvents.First().Should().BeEquivalentTo(expected.DomainEvents.First());
+        await _guildRepository.Received().UpdateAsync(Arg.Is<GuildState>(gs => gs.DomainEvents.Any(x => (Delivery) x == delivery)));
+    }
+    
+    [Test]
+    public async Task When_RemoveDomainEvent_EventIsRemoved()
+    {
+        // Arrange
+        var guildService = Create();
+        var guildStateId = "123";
+        var guildId      = 123123123ul;
+        var command      = new Command();
+        var delivery     = Delivery.Of(command);
+        var initialState = new GuildState("Test Guild", guildId, ImmutableList<SubscribedChannel>.Empty,
+                                          ImmutableList<IDelivery<IEvent>>.Empty.Add(delivery), guildStateId);
+        var expected        = initialState with { DomainEvents = initialState.DomainEvents.Remove(delivery)};
+        var stateObservable = Observable.Return(initialState);
+
+        _guildRepository.UpdateAsync(Arg.Is(expected)).Returns(Task.CompletedTask);
+
+        // Act
+        var actual = await guildService.RemoveDomainEventAsync(delivery, stateObservable);
+
+        // Assert
+        actual.DomainEvents.Should().BeEmpty();
+        await _guildRepository.Received().UpdateAsync(Arg.Is<GuildState>(gs => gs.DomainEvents.IsEmpty));
+    }
+    
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task When_Exists_ReturnsExpected(bool expected)
+    {
+        // Arrange
+        var guildService = Create();
+        var guildId      = 123123123ul;
+        
+        _guildRepository.ExistsAsync(Arg.Any<Expression<Func<GuildState, ulong>>>(), Arg.Is(guildId)).Returns(expected);
+
+        // Act
+        var actual = await guildService.ExistsAsync(guildId);
+
+        // Assert
+        actual.Should().Be(expected);
+        await _guildRepository.Received().ExistsAsync(Arg.Any<Expression<Func<GuildState, ulong>>>(), Arg.Is(guildId));
+    }
+    
+    [Test]
+    public async Task When_DeleteState_AndExists_StateIsDeleted()
+    {
+        // Arrange
+        var guildService  = Create();
+        var guildId       = 123123123ul;
+        var guildEntityId = "123";
+        
+        var initialState = new GuildState("Test Guild", guildId, ImmutableList<SubscribedChannel>.Empty,
+                                          ImmutableList<IDelivery<IEvent>>.Empty, guildEntityId);
+        var stateObservable = Observable.Return(initialState);
+        
+        _guildRepository.ExistsAsync(Arg.Any<Expression<Func<GuildState, ulong>>>(), Arg.Is(guildId)).Returns(true);
+
+        // Act
+        var actual = await guildService.DeleteStateAsync(stateObservable);
+
+        // Assert
+        actual.Should().Be(GuildState.Empty);
+        await _guildRepository.Received().DeleteAsync(Arg.Is(guildEntityId));
+    }
+    
+    [Test]
+    public async Task When_DeleteState_AndDoesNotExists_NothingHappens()
+    {
+        // Arrange
+        var guildService  = Create();
+        var guildId       = 123123123ul;
+        var guildEntityId = "123";
+        
+        var initialState = new GuildState("Test Guild", guildId, ImmutableList<SubscribedChannel>.Empty,
+                                          ImmutableList<IDelivery<IEvent>>.Empty, guildEntityId);
+        var stateObservable = Observable.Return(initialState);
+        
+        _guildRepository.ExistsAsync(Arg.Any<Expression<Func<GuildState, ulong>>>(), Arg.Is(guildId)).Returns(false);
+
+        // Act
+        var actual = await guildService.DeleteStateAsync(stateObservable);
+
+        // Assert
+        actual.Should().Be(initialState);
+        await _guildRepository.DidNotReceive().DeleteAsync(Arg.Any<string>());
+    }
 }
+
+public record TestCommand() : Command;

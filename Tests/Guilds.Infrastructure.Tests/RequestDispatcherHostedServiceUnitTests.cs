@@ -50,7 +50,7 @@ public class RequestDispatcherHostedServiceUnitTests
         var sut = Create();
 
         // Act
-        await sut.StartAsync(new System.Threading.CancellationToken());
+        await sut.StartAsync(new CancellationToken());
         commandsSubject.OnNext(Delivery.Of(command, Guid.NewGuid(), DateTimeOffset.Now));
 
         // Assert
@@ -63,7 +63,7 @@ public class RequestDispatcherHostedServiceUnitTests
     {
         // Arrange
         var query          = new TestQuery();
-        var queryHandler   = Substitute.For<IQueryHandler<IQuery>>();
+        var queryHandler   = Substitute.For<IQueryHandler>();
         var queriesSubject = new Subject<Delivery>();
         var result         = new TestQueryResult();
 

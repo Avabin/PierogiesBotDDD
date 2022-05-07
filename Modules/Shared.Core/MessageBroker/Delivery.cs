@@ -1,5 +1,4 @@
 ﻿using Shared.Core.Events;
-using Shared.Core.SeedWork;
 
 namespace Shared.Core.MessageBroker;
 

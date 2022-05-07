@@ -22,6 +22,5 @@ public interface IMessageBroker
 
     IObservable<Delivery> GetObservableForQueue<T>(string queueName) where T : IEvent;
 
-    public async ValueTask SendCommandAsync<T>(T command) where T : ICommand =>
-        await SendToQueueAsync(command, RpcQueueName);
+    public ValueTask SendCommandAsync<T>(T command, string? rpcQueueName = null) where T : ICommand;
 }
